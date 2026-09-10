@@ -74,13 +74,6 @@ const statusModalBackdrop = document.getElementById('status-modal-backdrop');
 const btnCloseStatusModal = document.getElementById('btn-close-status-modal');
 const statusModalBody = document.getElementById('status-modal-body');
 
-// Phase 7: Audio Preview Player
-const inspectorAudioWrap = document.getElementById('inspector-audio-wrap');
-const btnAudioPlay = document.getElementById('btn-audio-play');
-const audioProgressBar = document.getElementById('audio-progress-bar');
-const audioTimeLabel = document.getElementById('audio-time-label');
-const audioIconPlay = document.getElementById('audio-icon-play');
-const audioIconPause = document.getElementById('audio-icon-pause');
 
 const btnSampleDropdown = document.getElementById('btn-sample-dropdown');
 const sampleDropdownMenu = document.getElementById('sample-dropdown-menu');
@@ -131,7 +124,6 @@ const toastContainer = document.getElementById('toast-container');
 // Phase 7 state
 let is2DMode = false;
 let filamentsVisible = true;
-let activeAudio = null;
 
 /**
  * Toast Notification
@@ -613,79 +605,11 @@ function closeSearchPopup() {
 }
 
 /**
- * Phase 7: Audio preview player
- */
-function setupAudioPlayer() {
-  if (!btnAudioPlay) return;
-
-  btnAudioPlay.addEventListener('click', () => {
-    if (!activeAudio) return;
-    if (activeAudio.paused) {
-      activeAudio.play().catch(() => showToast('Audio preview unavailable', 'info', 2000));
-    } else {
-      activeAudio.pause();
-    }
-  });
-}
-
-function loadAudioPreview(previewUrl) {
-  // Stop any currently playing audio
-  if (activeAudio) {
-    activeAudio.pause();
-    activeAudio = null;
-  }
-
-  if (!previewUrl || !inspectorAudioWrap) {
-    if (inspectorAudioWrap) inspectorAudioWrap.style.display = 'none';
-    return;
-  }
-
-  inspectorAudioWrap.style.display = 'flex';
-
-  // Reset UI
-  audioIconPlay.style.display = '';
-  audioIconPause.style.display = 'none';
-  audioProgressBar.style.width = '0%';
-  audioTimeLabel.textContent = '0:00 / 0:30';
-
-  const audio = new Audio(previewUrl);
-  audio.preload = 'none';
-  activeAudio = audio;
-
-  audio.addEventListener('play', () => {
-    audioIconPlay.style.display = 'none';
-    audioIconPause.style.display = '';
-  });
-
-  audio.addEventListener('pause', () => {
-    audioIconPlay.style.display = '';
-    audioIconPause.style.display = 'none';
-  });
-
-  audio.addEventListener('ended', () => {
-    audioIconPlay.style.display = '';
-    audioIconPause.style.display = 'none';
-    audioProgressBar.style.width = '0%';
-  });
-
-  audio.addEventListener('timeupdate', () => {
-    const duration = audio.duration || 30;
-    const pct = Math.min(100, (audio.currentTime / duration) * 100);
-    audioProgressBar.style.width = `${pct}%`;
-    const cur = Math.floor(audio.currentTime);
-    const total = Math.floor(duration);
-    const fmt = s => `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
-    audioTimeLabel.textContent = `${fmt(cur)} / ${fmt(total)}`;
-  });
-}
-
-/**
  * Opens Slide-Over Inspector Drawer for a Criminal Suspect Dossier (Level 5)
  */
 function openTrackInspector(track) {
   if (!track) return;
   inspectorCategory.textContent = 'Suspect Intelligence Dossier • SIH 2026';
-  loadAudioPreview(track.preview_url || null);
 
   inspectorArtwork.src = generateSuspectAvatarSvg(track.title, track.risk_level, track.galaxy_color);
 
@@ -812,8 +736,6 @@ function openTrackInspector(track) {
  * Opens Slide-Over Inspector Drawer for an Operational Cell (Level 4)
  */
 function openAlbumInspector(album) {
-  if (inspectorAudioWrap) inspectorAudioWrap.style.display = 'none';
-  if (activeAudio) { activeAudio.pause(); activeAudio = null; }
   if (!album) return;
   if (inspectorEnrichmentDetails) inspectorEnrichmentDetails.style.display = 'none';
   inspectorCategory.textContent = 'Operational Cell • Level 4';
@@ -896,8 +818,6 @@ function openAlbumInspector(album) {
  * Opens Slide-Over Inspector Drawer for a Crime Syndicate (Level 3)
  */
 function openArtistInspector(artistName) {
-  if (inspectorAudioWrap) inspectorAudioWrap.style.display = 'none';
-  if (activeAudio) { activeAudio.pause(); activeAudio = null; }
   if (!state.library) return;
   if (inspectorEnrichmentDetails) inspectorEnrichmentDetails.style.display = 'none';
   const tracksByArtist = state.library.records.filter(t => t.artist.toLowerCase() === artistName.toLowerCase());
@@ -1313,8 +1233,6 @@ async function runFullPipeline(rawText, type, fileName) {
  * Setup Event Listeners
  */
 function setupEventListeners() {
-  setupAudioPlayer();
-
   // Search input with autocomplete popup
   let searchTimer = null;
   universeSearchInput.addEventListener('input', (e) => {
