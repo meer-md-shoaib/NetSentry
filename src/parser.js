@@ -129,20 +129,6 @@ export function parseJSON(jsonText) {
     throw new Error(`JSON syntax error: ${err.message}`);
   }
 
-  // Check if this is an official Spotify GDPR export file
-  const isSpotifyLibrary = parsed && parsed.tracks && Array.isArray(parsed.tracks) && (parsed.tracks[0]?.track || parsed.tracks[0]?.artist);
-  const isSpotifyStreaming = Array.isArray(parsed) && parsed.length > 0 && (parsed[0]?.master_metadata_track_name !== undefined || parsed[0]?.ms_played !== undefined || parsed[0]?.endTime !== undefined);
-
-  if (isSpotifyLibrary || isSpotifyStreaming) {
-    try {
-      const spotifyTracks = parseSpotifyDataExport(parsed);
-      const headers = ['title', 'artist', 'album', 'playlist', 'play_count', 'duration', 'date_added', 'source'];
-      return { rawRecords: spotifyTracks, headers, headerMap: detectHeaderMapping(headers) };
-    } catch (e) {
-      console.warn('[Parser] Spotify export parser fell back to generic JSON parsing:', e);
-    }
-  }
-
   let rawList = [];
   if (Array.isArray(parsed)) {
     rawList = parsed;
