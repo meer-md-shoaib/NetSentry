@@ -1261,8 +1261,8 @@ function setupEventListeners() {
       closeSearchPopup();
       if (query.trim() && universe3D) {
         const found = universe3D.searchAndFlyTo(query);
-        if (!found) showToast(`No matching node for "${query}"`, 'info', 2000);
-        else showToast(`Flying to "${query}"`, 'info', 1800);
+        if (!found) showToast(`No matching suspect, cell, or syndicate for "${query}"`, 'info', 2000);
+        else showToast(`Navigating to "${query}"`, 'info', 1800);
       }
     } else if (e.key === 'Escape') {
       closeSearchPopup();
