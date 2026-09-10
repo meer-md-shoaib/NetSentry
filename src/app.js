@@ -1060,14 +1060,14 @@ function renderStatusModal() {
 }
 
 /**
- * Unified pipeline for any set of raw records (Apple Music, Spotify, CSV, JSON, Paste)
+ * Unified pipeline for any set of raw records (CSV, JSON, Manifest)
  */
 async function runRecordsPipeline(rawRecords, sourceLabel) {
   uploadModalBackdrop.classList.remove('open');
   updateProcessingUI({
-    fileName: sourceLabel || 'Imported Music',
-    importStatus: 'Parsing & detecting tracks...',
-    importDetail: `${rawRecords.length} raw tracks received...`,
+    fileName: sourceLabel || 'Intelligence Dossier',
+    importStatus: 'Parsing & detecting suspect records...',
+    importDetail: `${rawRecords.length} raw records received...`,
     enrichmentStatus: 'Pending',
     showEnrichmentBar: false,
     relStatus: 'Pending',
@@ -1086,13 +1086,13 @@ async function runRecordsPipeline(rawRecords, sourceLabel) {
 
     const totalDetected = ingestResult.records.length;
     updateProcessingUI({
-      importStatus: `✓ ${totalDetected} tracks detected`,
+      importStatus: `✓ ${totalDetected} suspects detected`,
       importDetail: 'Canonical normalization and schema validation complete.'
     });
 
-    // 2. METADATA ENRICHMENT (Hybrid Waterfall)
+    // 2. METADATA ENRICHMENT (Identity & Alias Resolution)
     updateProcessingUI({
-      enrichmentStatus: 'Starting enrichment pipeline...',
+      enrichmentStatus: 'Starting alias & identity resolution...',
       showEnrichmentBar: true,
       enrichmentPercent: 0,
       matchedCount: 0,
@@ -1117,7 +1117,7 @@ async function runRecordsPipeline(rawRecords, sourceLabel) {
 
     const { matchedCount, partialCount, unmatchedCount, errorCount, enrichedTracks, enrichmentLog } = enrichmentResult;
     updateProcessingUI({
-      enrichmentStatus: '✓ COMPLETE',
+      enrichmentStatus: '✓ RESOLVED',
       showEnrichmentBar: true,
       enrichmentPercent: 100,
       matchedCount,
@@ -1126,18 +1126,18 @@ async function runRecordsPipeline(rawRecords, sourceLabel) {
       currentTrack: ''
     });
 
-    // 3. RELATIONSHIP ANALYSIS
+    // 3. RELATIONSHIP ANALYSIS (Cross-Jurisdiction Linking)
     updateProcessingUI({
-      relStatus: 'Analyzing affinity signals...'
+      relStatus: 'Analyzing cross-jurisdiction affinity signals...'
     });
     relationshipEngine.indexLibrary(enrichedTracks);
     updateProcessingUI({
       relStatus: '✓ COMPLETE'
     });
 
-    // 4. CONSTELLATION GENERATION
+    // 4. GRAPH SYNTHESIS
     updateProcessingUI({
-      constellationStatus: 'Generating celestial coordinates & galaxies...'
+      constellationStatus: 'Synthesizing 3D spatial network graph...'
     });
     const constellation = spatialEngine.generateConstellation(
       enrichedTracks,
@@ -1145,7 +1145,7 @@ async function runRecordsPipeline(rawRecords, sourceLabel) {
       { algorithm: 'UMAP', seed: 42 }
     );
     updateProcessingUI({
-      constellationStatus: '✓ GENERATED'
+      constellationStatus: '✓ GRAPH SYNTHESIZED'
     });
 
     // Persist library

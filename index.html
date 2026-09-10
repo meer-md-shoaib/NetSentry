@@ -340,44 +340,44 @@ Tariq Merchant - D-West Cartel [Dubai Hawala Remittance Node]"></textarea>
     </div>
 
     <div class="proc-phases">
-      <!-- 1. IMPORT -->
+      <!-- 1. DATA INGESTION -->
       <div class="proc-phase-item" id="proc-step-import">
         <div class="proc-step-header">
-          <span class="proc-step-name">IMPORT</span>
-          <span class="proc-step-status" id="proc-import-status">Detecting tracks...</span>
+          <span class="proc-step-name">DATA INGESTION</span>
+          <span class="proc-step-status" id="proc-import-status">Detecting suspect records...</span>
         </div>
-        <div class="proc-step-detail" id="proc-import-detail">Validating schema & deduplicating...</div>
+        <div class="proc-step-detail" id="proc-import-detail">Validating schema & deduplicating FIR cases...</div>
       </div>
 
-      <!-- 2. METADATA ENRICHMENT -->
+      <!-- 2. IDENTITY & ALIAS RESOLUTION -->
       <div class="proc-phase-item" id="proc-step-enrichment">
         <div class="proc-step-header">
-          <span class="proc-step-name">METADATA ENRICHMENT</span>
+          <span class="proc-step-name">IDENTITY & ALIAS RESOLUTION (USP 1)</span>
           <span class="proc-step-status" id="proc-enrichment-status">Pending</span>
         </div>
         <div class="proc-progress-bar-wrap" id="proc-enrichment-bar-wrap" style="display: none;">
           <div class="proc-progress-bar" id="proc-enrichment-bar" style="width: 0%;"></div>
         </div>
         <div class="proc-counts-row" id="proc-enrichment-counts" style="display: none;">
-          <span class="count-matched"><strong id="proc-matched-num">0</strong> matched</span> • 
+          <span class="count-matched"><strong id="proc-matched-num">0</strong> resolved</span> • 
           <span class="count-partial"><strong id="proc-partial-num">0</strong> partial</span> • 
-          <span class="count-unmatched"><strong id="proc-unmatched-num">0</strong> unmatched</span>
+          <span class="count-unmatched"><strong id="proc-unmatched-num">0</strong> unresolved</span>
         </div>
         <div class="proc-current-track" id="proc-enrichment-current" style="display: none;"></div>
       </div>
 
-      <!-- 3. RELATIONSHIP ANALYSIS -->
+      <!-- 3. CROSS-JURISDICTION LINKING -->
       <div class="proc-phase-item" id="proc-step-rel">
         <div class="proc-step-header">
-          <span class="proc-step-name">RELATIONSHIP ANALYSIS</span>
+          <span class="proc-step-name">CROSS-JURISDICTION LINKING (USP 2)</span>
           <span class="proc-step-status" id="proc-rel-status">Pending</span>
         </div>
       </div>
 
-      <!-- 4. CONSTELLATION -->
+      <!-- 4. INTELLIGENCE GRAPH SYNTHESIS -->
       <div class="proc-phase-item" id="proc-step-constellation">
         <div class="proc-step-header">
-          <span class="proc-step-name">CONSTELLATION</span>
+          <span class="proc-step-name">INTELLIGENCE GRAPH SYNTHESIS</span>
           <span class="proc-step-status" id="proc-constellation-status">Pending</span>
         </div>
       </div>
