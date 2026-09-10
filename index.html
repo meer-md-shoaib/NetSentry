@@ -275,114 +275,54 @@
   <!-- Hidden File Input for Import -->
   <input type="file" id="file-input" accept=".csv,.json,.xml,text/csv,application/json,text/xml" style="display: none;">
 
-  <!-- Comprehensive Phase 8 Import Modal -->
+  <!-- Comprehensive NetSentry Import Modal -->
   <div id="upload-modal-backdrop" class="modal-backdrop">
     <div class="modal-card modal-card-md">
       <div class="modal-header">
         <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 16px; color: var(--color-aurora-cyan);">✦</span>
-          <h3 class="modal-title">Import Music Into Universe</h3>
+          <span style="font-size: 16px; color: var(--color-aurora-cyan);">🕸️</span>
+          <h3 class="modal-title">Import Intelligence Dataset</h3>
         </div>
         <button id="btn-close-upload-modal" class="btn-ghost-sm">✕</button>
       </div>
 
       <!-- Import Navigation Tabs -->
       <div class="import-modal-tabs">
-        <button class="import-tab-btn active" id="tab-import-apple" data-tab="apple">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.63-.77 1.06-1.84.94-2.91-.91.04-2.02.61-2.67 1.37-.58.67-1.09 1.77-.95 2.81 1.02.08 2.05-.51 2.68-1.27z"/></svg>
-          Apple Music
-        </button>
-        <button class="import-tab-btn" id="tab-import-spotify" data-tab="spotify">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.563.387-.857.207-2.35-1.435-5.308-1.76-8.793-.963-.335.077-.67-.133-.746-.468-.077-.334.132-.67.467-.746 3.808-.87 7.076-.496 9.722 1.115.294.18.386.562.207.855zm1.226-2.726c-.227.368-.71.482-1.078.256-2.69-1.653-6.79-2.134-9.97-1.168-.413.125-.85-.108-.975-.52-.125-.413.108-.85.52-.975 3.633-1.103 8.147-.568 11.247 1.33.368.226.482.71.256 1.077zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71c-.494.15-1.02-.132-1.17-.626-.15-.493.132-1.02.626-1.17 3.532-1.072 9.404-.865 13.115 1.338.445.264.59.838.327 1.282-.264.444-.838.59-1.282.328z"/></svg>
-          Spotify
-        </button>
-        <button class="import-tab-btn" id="tab-import-files" data-tab="files">
+        <button class="import-tab-btn active" id="tab-import-files" data-tab="files">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
           Files (CSV / JSON)
         </button>
         <button class="import-tab-btn" id="tab-import-paste" data-tab="paste">
           <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
-          Quick Paste
+          Quick Dossier Manifest
         </button>
       </div>
 
       <div class="import-tab-contents">
-        <!-- 1. Apple Music Tab Content -->
-        <div class="import-tab-pane active" id="pane-import-apple">
-          <div class="import-section-desc">
-            Paste any Apple Music album or song link to import its complete tracklist, genres, 600×600 artwork, and 30s audio previews:
-          </div>
-          <div class="import-input-row">
-            <input type="text" id="input-apple-music-url" class="import-text-input" placeholder="https://music.apple.com/us/album/ok-computer/1097861387">
-            <button id="btn-fetch-apple-music" class="btn-primary-sm">Fetch & Build</button>
-          </div>
-          <div class="import-preset-pills">
-            <span class="preset-pills-label">Presets:</span>
-            <button class="preset-pill-btn" data-url="https://music.apple.com/us/album/ok-computer/1097861387">Radiohead — OK Computer</button>
-            <button class="preset-pill-btn" data-url="https://music.apple.com/us/album/after-hours/1499378108">The Weeknd — After Hours</button>
-            <button class="preset-pill-btn" data-url="https://music.apple.com/us/album/blonde/1146195596">Frank Ocean — Blonde</button>
-            <button class="preset-pill-btn" data-url="https://music.apple.com/us/album/in-rainbows/1109714933">Radiohead — In Rainbows</button>
-          </div>
-          <div class="import-divider"><span>OR DROP APPLE MUSIC XML EXPORT</span></div>
-          <div class="import-secondary-hint">
-            In Apple Music / iTunes (macOS or Windows), go to <strong>File → Library → Export Library...</strong> and drop the resulting <code>Library.xml</code> here:
-          </div>
-          <div id="dropzone-apple-xml" class="modal-dropzone mini-dropzone" tabindex="0">
-            <p style="font-size: 11px; color: #ffffff; font-weight: 500;">Drop Apple Music <code>Library.xml</code> here</p>
-          </div>
-        </div>
-
-        <!-- 2. Spotify Tab Content -->
-        <div class="import-tab-pane" id="pane-import-spotify">
-          <div class="import-section-desc">
-            Connect to Spotify via official Web API token, or upload your Spotify privacy export (<code>YourLibrary.json</code> or <code>StreamingHistory.json</code>).
-          </div>
-          <div class="spotify-auth-card">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
-              <span style="font-size: 12px; font-weight: 600; color: #ffffff;">Spotify Web API (Top Tracks)</span>
-              <a href="https://developer.spotify.com/console/get-current-user-top-artists-and-tracks/" target="_blank" class="spotify-token-help" style="font-size: 10px; color: #1db954;">Get Token ↗</a>
-            </div>
-            <div class="import-input-row">
-              <input type="password" id="input-spotify-token" class="import-text-input" placeholder="Paste Spotify Bearer Token">
-              <button id="btn-fetch-spotify-top" class="btn-spotify-sm">Load Top Tracks</button>
-            </div>
-          </div>
-          <div class="import-divider"><span>OR UPLOAD SPOTIFY DATA EXPORT FILE</span></div>
-          <div class="import-secondary-hint">
-            Download your personal data from Spotify Privacy settings and drop <code>YourLibrary.json</code> or <code>Streaming_History_Audio_*.json</code>:
-          </div>
-          <div id="dropzone-spotify-json" class="modal-dropzone mini-dropzone" tabindex="0">
-            <p style="font-size: 11px; color: #ffffff; font-weight: 500;">Drop <code>YourLibrary.json</code> or <code>Streaming_History.json</code></p>
-          </div>
-        </div>
-
-        <!-- 3. Files Tab Content (CSV / JSON / XML) -->
-        <div class="import-tab-pane" id="pane-import-files">
+        <!-- 1. Files Tab Content (CSV / JSON) -->
+        <div class="import-tab-pane active" id="pane-import-files">
           <div id="dropzone" class="modal-dropzone" tabindex="0">
             <div class="dropzone-icon">
               <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
             </div>
-            <p style="font-weight: 600; color: #ffffff; font-size: 13px;">Drop CSV, JSON, or XML file here</p>
-            <p style="font-size: 12px; color: var(--color-muted); margin-top: 4px;">Supports Apple Music, Spotify, Rekordbox, and custom playlists</p>
+            <p style="font-weight: 600; color: #ffffff; font-size: 13px;">Drop CSV or JSON intelligence file here</p>
+            <p style="font-size: 12px; color: var(--color-muted); margin-top: 4px;">Supports CCTNS FIR logs, multi-agency CDR call sheets, and syndicate registries</p>
           </div>
         </div>
 
-        <!-- 4. Quick Paste Tab Content -->
+        <!-- 2. Quick Paste Tab Content -->
         <div class="import-tab-pane" id="pane-import-paste">
           <div class="import-section-desc">
-            Paste any list of songs (one per line, e.g. <code>Artist - Song Title</code> or <code>Track [Album]</code>):
+            Paste suspect entries (one per line, e.g. <code>Suspect Name - Syndicate [Cell]</code>):
           </div>
-          <textarea id="textarea-paste-tracks" class="import-textarea" rows="6" placeholder="Radiohead - Paranoid Android
-The Weeknd - Blinding Lights [After Hours]
-Frank Ocean - Nights
-Beach House - Space Song
-M83 - Midnight City
-Aphex Twin - Windowlicker
-Daft Punk - Instant Crush
-Tame Impala - The Less I Know The Better"></textarea>
+          <textarea id="textarea-paste-tracks" class="import-textarea" rows="6" placeholder="Mohd. Aslam - D-West Cartel [Nhava Sheva Port Logistics]
+Vikram Rathore - NCR Arms Ring [Meerut Foundry]
+David Chen - Cyber Nexus [Crypto Mixers & Shell Routing]
+Haji Ismail - Coastal Contraband [Mandvi Mechanized Dhow Fleet]
+Tariq Merchant - D-West Cartel [Dubai Hawala Remittance Node]"></textarea>
           <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-            <button id="btn-paste-sample" class="btn-text-sm">Insert Sample List</button>
-            <button id="btn-submit-paste" class="btn-primary-sm">Build Universe From Text</button>
+            <button id="btn-paste-sample" class="btn-text-sm">Insert Sample Dossier</button>
+            <button id="btn-submit-paste" class="btn-primary-sm">Build Intelligence Graph</button>
           </div>
         </div>
       </div>

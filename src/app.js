@@ -1,16 +1,14 @@
 /**
- * Music Constellation — Main Application Controller
- * Rebuilt for minimal UI, fullscreen immersive navigation, and instant search fly-to.
+ * NetSentry — Criminal Network Intelligence Controller
+ * Minimal UI, fullscreen immersive navigation, and instant search fly-to.
  */
 
-import { ingestMusicData, ingestRawRecords, parseCSV, parseJSON, parseXML } from './parser.js?v=8.0.2';
+import { ingestMusicData, ingestRawRecords, parseCSV, parseJSON, parseManifestText } from './parser.js?v=8.0.2';
 import { storage } from './storage.js?v=8.0.2';
 import { enrichmentEngine } from './enrichment/enrichmentEngine.js?v=8.0.2';
 import { relationshipEngine } from './intelligence/relationshipEngine.js?v=8.0.2';
 import { spatialEngine } from './spatial/spatialEngine.js?v=8.0.2';
 import { Universe3D } from './universe/universe3D.js?v=8.0.2';
-import { resolveAppleMusicUrl, parseAppleMusicXML } from './integrations/appleMusic.js?v=8.0.2';
-import { fetchSpotifyTopTracks, parseSpotifyDataExport, parseTracklistText } from './integrations/spotify.js?v=8.0.2';
 import { getNormalizedCriminalRecords, RELATIONSHIPS, SYNDICATES, CRIMINALS } from './data/criminalDataset.js';
 
 /**
@@ -1512,139 +1510,22 @@ function setupEventListeners() {
     });
   });
 
-  // Apple Music URL Fetch
-  const inputAppleUrl = document.getElementById('input-apple-music-url');
-  const btnFetchApple = document.getElementById('btn-fetch-apple-music');
-
-  const executeAppleFetch = async (url) => {
-    if (!url || !url.trim()) {
-      showToast('Please enter an Apple Music album or song link', 'info');
-      return;
-    }
-    btnFetchApple.disabled = true;
-    btnFetchApple.textContent = 'Resolving...';
-    try {
-      showToast('Connecting to Apple Music API...', 'info', 2000);
-      const tracks = await resolveAppleMusicUrl(url.trim());
-      const albumTitle = tracks[0]?.album || 'Apple Music Collection';
-      await runRecordsPipeline(tracks, `Apple Music: ${albumTitle}`);
-    } catch (err) {
-      console.error('Apple Music fetch error:', err);
-      showToast(err.message, 'error', 4500);
-    } finally {
-      btnFetchApple.disabled = false;
-      btnFetchApple.textContent = 'Fetch & Build';
-    }
-  };
-
-  if (btnFetchApple && inputAppleUrl) {
-    btnFetchApple.addEventListener('click', () => executeAppleFetch(inputAppleUrl.value));
-    inputAppleUrl.addEventListener('keydown', (e) => {
-      if (e.key === 'Enter') executeAppleFetch(inputAppleUrl.value);
-    });
-  }
-
-  // Apple Music Preset Pills
-  document.querySelectorAll('.preset-pill-btn').forEach(pill => {
-    pill.addEventListener('click', () => {
-      const url = pill.getAttribute('data-url');
-      if (inputAppleUrl && url) {
-        inputAppleUrl.value = url;
-        executeAppleFetch(url);
-      }
-    });
-  });
-
-  // Apple Music XML Dropzone
-  const dropzoneAppleXml = document.getElementById('dropzone-apple-xml');
-  if (dropzoneAppleXml) {
-    const handleXmlFile = async (file) => {
-      try {
-        showToast('Parsing Apple Music Library.xml...', 'info', 2500);
-        const text = await file.text();
-        const tracks = parseAppleMusicXML(text);
-        await runRecordsPipeline(tracks, file.name);
-      } catch (err) {
-        showToast(err.message, 'error', 4500);
-      }
-    };
-
-    dropzoneAppleXml.addEventListener('click', () => fileInput.click());
-    ['dragenter', 'dragover'].forEach(n => dropzoneAppleXml.addEventListener(n, (e) => { e.preventDefault(); dropzoneAppleXml.classList.add('dragover'); }));
-    ['dragleave', 'drop'].forEach(n => dropzoneAppleXml.addEventListener(n, (e) => { e.preventDefault(); dropzoneAppleXml.classList.remove('dragover'); }));
-    dropzoneAppleXml.addEventListener('drop', (e) => {
-      if (e.dataTransfer.files.length > 0) handleXmlFile(e.dataTransfer.files[0]);
-    });
-  }
-
-  // Spotify Top Tracks Fetch
-  const inputSpotifyToken = document.getElementById('input-spotify-token');
-  const btnFetchSpotifyTop = document.getElementById('btn-fetch-spotify-top');
-  if (btnFetchSpotifyTop && inputSpotifyToken) {
-    btnFetchSpotifyTop.addEventListener('click', async () => {
-      const token = inputSpotifyToken.value.trim();
-      if (!token) {
-        showToast('Paste a valid Spotify user access token', 'info', 3000);
-        return;
-      }
-      btnFetchSpotifyTop.disabled = true;
-      btnFetchSpotifyTop.textContent = 'Connecting...';
-      try {
-        showToast('Fetching Spotify Top Tracks...', 'info', 2000);
-        const tracks = await fetchSpotifyTopTracks(token);
-        await runRecordsPipeline(tracks, 'Spotify Top 50');
-      } catch (err) {
-        showToast(err.message, 'error', 4500);
-      } finally {
-        btnFetchSpotifyTop.disabled = false;
-        btnFetchSpotifyTop.textContent = 'Load Top Tracks';
-      }
-    });
-  }
-
-  // Spotify JSON Dropzone
-  const dropzoneSpotifyJson = document.getElementById('dropzone-spotify-json');
-  if (dropzoneSpotifyJson) {
-    const handleSpotifyFile = async (file) => {
-      try {
-        showToast('Parsing Spotify privacy export...', 'info', 2500);
-        const text = await file.text();
-        const json = JSON.parse(text);
-        const tracks = parseSpotifyDataExport(json);
-        await runRecordsPipeline(tracks, file.name);
-      } catch (err) {
-        showToast(err.message, 'error', 4500);
-      }
-    };
-
-    dropzoneSpotifyJson.addEventListener('click', () => fileInput.click());
-    ['dragenter', 'dragover'].forEach(n => dropzoneSpotifyJson.addEventListener(n, (e) => { e.preventDefault(); dropzoneSpotifyJson.classList.add('dragover'); }));
-    ['dragleave', 'drop'].forEach(n => dropzoneSpotifyJson.addEventListener(n, (e) => { e.preventDefault(); dropzoneSpotifyJson.classList.remove('dragover'); }));
-    dropzoneSpotifyJson.addEventListener('drop', (e) => {
-      if (e.dataTransfer.files.length > 0) handleSpotifyFile(e.dataTransfer.files[0]);
-    });
-  }
-
-  // Quick Paste Tab
+  // Quick Dossier Paste Tab
   const textareaPaste = document.getElementById('textarea-paste-tracks');
   const btnPasteSample = document.getElementById('btn-paste-sample');
   const btnSubmitPaste = document.getElementById('btn-submit-paste');
 
   if (btnPasteSample && textareaPaste) {
     btnPasteSample.addEventListener('click', () => {
-      textareaPaste.value = `Radiohead - Paranoid Android [OK Computer]
-The Weeknd - Blinding Lights [After Hours]
-Frank Ocean - Nights [Blonde]
-Beach House - Space Song [Depression Cherry]
-M83 - Midnight City [Hurry Up, We're Dreaming]
-Aphex Twin - Windowlicker
-Daft Punk - Instant Crush [Random Access Memories]
-Tame Impala - The Less I Know The Better [Currents]
-Bonobo - Kerala [Migration]
-Tycho - Awake [Awake]
-Kendrick Lamar - Alright [To Pimp A Butterfly]
-SZA - Snooze [SOS]`;
-      showToast('Sample tracklist inserted', 'info', 1800);
+      textareaPaste.value = `Mohd. Aslam - D-West Cartel [Nhava Sheva Port Logistics]
+Vikram Rathore - NCR Arms Ring [Meerut Foundry]
+David Chen - Cyber Nexus [Crypto Mixers & Shell Routing]
+Haji Ismail - Coastal Contraband [Mandvi Mechanized Dhow Fleet]
+Tariq Merchant - D-West Cartel [Dubai Hawala Remittance Node]
+Kuldeep Tyagi - NCR Arms Ring [Western UP Distribution Axis]
+Rohit Verma - Cyber Nexus [Jamtara Mule Networks]
+Ibrahim Kaskar - Coastal Contraband [Arabian Sea Landing Operations]`;
+      showToast('Sample suspect dossier manifest inserted', 'info', 1800);
     });
   }
 
@@ -1652,13 +1533,13 @@ SZA - Snooze [SOS]`;
     btnSubmitPaste.addEventListener('click', async () => {
       const text = textareaPaste.value.trim();
       if (!text) {
-        showToast('Please paste at least one track line', 'info');
+        showToast('Please paste at least one suspect entry', 'info');
         return;
       }
       try {
-        const tracks = parseTracklistText(text);
-        showToast(`Parsed ${tracks.length} tracks from text`, 'info', 2000);
-        await runRecordsPipeline(tracks, 'Pasted Tracklist');
+        const records = parseManifestText(text);
+        showToast(`Parsed ${records.length} suspect records from manifest`, 'info', 2000);
+        await runRecordsPipeline(records, 'Pasted Intelligence Manifest');
       } catch (err) {
         showToast(err.message, 'error', 4000);
       }

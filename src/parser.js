@@ -1,6 +1,6 @@
 /**
- * Music Constellation — Parsing & Deduplication Engine (Phase 1 & Phase 8)
- * Handles CSV, JSON, Apple Music XML, Spotify GDPR exports, and raw tracklists.
+ * NetSentry — Parsing & Deduplication Engine
+ * Handles CSV, JSON, and raw intelligence manifests.
  * Implements RFC 4180 parsing, progress reporting, schema normalization, and deduplication.
  */
 
@@ -9,9 +9,6 @@ import {
   detectHeaderMapping,
   cleanText
 } from './normalizer.js';
-
-import { parseAppleMusicXML } from './integrations/appleMusic.js';
-import { parseSpotifyDataExport } from './integrations/spotify.js';
 
 /**
  * Fast RFC 4180 compliant CSV parser
@@ -187,12 +184,85 @@ export function parseJSON(jsonText) {
 }
 
 /**
- * Parses Apple Music / iTunes exported XML files
+ * Parses raw text dossier manifests
+ * Handles lines like:
+ * - Suspect Name - Syndicate [Operational Cell]
+ * - Name: Aslam Bhai | Syndicate: D-West Cartel | Cell: Logistics
  */
-export function parseXML(xmlText) {
-  const rawList = parseAppleMusicXML(xmlText);
-  const headers = ['title', 'artist', 'album', 'playlist', 'genre', 'duration', 'play_count', 'year', 'date_added', 'source'];
-  return { rawRecords: rawList, headers, headerMap: detectHeaderMapping(headers) };
+export function parseManifestText(rawText) {
+  if (!rawText || typeof rawText !== 'string') {
+    throw new Error('Manifest text is empty.');
+  }
+
+  const lines = rawText
+    .split(/\r?\n/)
+    .map(l => l.trim())
+    .filter(l => l.length > 0 && !l.startsWith('#') && !l.startsWith('//'));
+
+  if (lines.length === 0) {
+    throw new Error('No valid records found in pasted manifest.');
+  }
+
+  const records = [];
+
+  for (let i = 0; i < lines.length; i++) {
+    let line = lines[i];
+    line = line.replace(/^(?:\[?\d+\]?[.\-\s]+)+/, '').trim();
+
+    if (line.includes('|') || /name\s*:/i.test(line) || /suspect\s*:/i.test(line)) {
+      const parts = line.split('|').map(p => p.trim());
+      let syndicate = '';
+      let title = '';
+      let cell = 'Operational Cell';
+
+      parts.forEach(p => {
+        if (/^(syndicate|gang|cartel|artist)\s*:/i.test(p)) syndicate = p.replace(/^[a-z]+\s*:/i, '').trim();
+        else if (/^(name|suspect|title|operative)\s*:/i.test(p)) title = p.replace(/^[a-z]+\s*:/i, '').trim();
+        else if (/^(cell|module|faction|album)\s*:/i.test(p)) cell = p.replace(/^[a-z]+\s*:/i, '').trim();
+      });
+
+      if (title && syndicate) {
+        records.push({ title, artist: syndicate, album: cell, playlist: 'Intelligence Import', source: 'Text Manifest' });
+        continue;
+      }
+    }
+
+    const sepMatch = line.match(/\s*[-–—]\s*/);
+    if (sepMatch) {
+      const idx = sepMatch.index;
+      const sepLen = sepMatch[0].length;
+      let part1 = line.slice(0, idx).trim();
+      let part2 = line.slice(idx + sepLen).trim();
+
+      let cell = 'Operational Cell';
+      const bracketMatch = part2.match(/\[([^\]]+)\]|\(([^)]+)\)$/);
+      if (bracketMatch) {
+        cell = bracketMatch[1] || bracketMatch[2];
+        part2 = part2.replace(bracketMatch[0], '').trim();
+      }
+
+      if (part1 && part2) {
+        records.push({
+          title: part1,
+          artist: part2,
+          album: cell,
+          playlist: 'Intelligence Import',
+          source: 'Text Manifest'
+        });
+        continue;
+      }
+    }
+
+    records.push({
+      title: line,
+      artist: 'Unassigned Syndicate',
+      album: 'General Cell',
+      playlist: 'Intelligence Import',
+      source: 'Text Manifest'
+    });
+  }
+
+  return records;
 }
 
 /**
