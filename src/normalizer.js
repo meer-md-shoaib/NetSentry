@@ -1,19 +1,19 @@
 /**
- * Music Constellation — Normalization Engine (Phase 1)
- * Converts disparate music raw records into standardized, clean internal schema.
+ * NetSentry — Data Normalization Engine
+ * Converts disparate intelligence records into standardized internal schemas.
  */
 
-// Common header synonyms across Spotify, Apple Music, Rekordbox, and custom CSV/JSON
+// Common header synonyms across CCTNS, FIR logs, and custom CSV/JSON
 export const HEADER_ALIASES = {
-  title: ['title', 'track name', 'track_name', 'song', 'song name', 'song_title', 'name'],
-  artist: ['artist', 'artist name', 'artist_name', 'performer', 'band', 'creator'],
-  album: ['album', 'album name', 'album_name', 'record', 'collection'],
-  playlist: ['playlist', 'playlist name', 'playlist_name', 'collection_name', 'folder', 'category'],
-  release_date: ['release date', 'release_date', 'year', 'release year', 'date', 'year released'],
+  title: ['suspect_name', 'suspect', 'name', 'operative', 'accused', 'alias_target', 'title', 'track name', 'song'],
+  artist: ['syndicate', 'crime_syndicate', 'gang', 'cartel', 'organization', 'ring', 'artist', 'creator'],
+  album: ['operational_cell', 'cell', 'module', 'faction', 'hub', 'sub_unit', 'album'],
+  playlist: ['jurisdiction', 'agency', 'police_station', 'investigating_agency', 'cctns_state', 'playlist', 'category'],
+  release_date: ['fir_date', 'incident_date', 'registration_date', 'year', 'date', 'release date'],
   date_added: ['date added', 'date_added', 'added_at', 'created_at', 'import_date'],
-  play_count: ['play count', 'play_count', 'plays', 'scrobbles', 'listen count'],
-  duration: ['duration', 'duration_ms', 'time', 'length', 'track duration', 'track_duration'],
-  genre: ['genre', 'genres', 'primary genre', 'tag', 'tags', 'style']
+  play_count: ['incident_count', 'case_count', 'play count', 'play_count'],
+  duration: ['duration', 'duration_ms', 'time', 'length'],
+  genre: ['crime_category', 'ipc_section', 'offense', 'crime_type', 'modus_operandi', 'genre', 'tag', 'tags']
 };
 
 /**
@@ -144,7 +144,7 @@ export function normalizeRawRecord(raw, source = 'file-upload', headerMap = null
 
   const title = smartCase(rawTitle);
   const artist = smartCase(rawArtist);
-  const album = smartCase(rawAlbum) || 'Unknown Album';
+  const album = smartCase(rawAlbum) || 'General Cell';
 
   // Playlist parsing: could be string or array
   let playlists = [];
@@ -159,7 +159,7 @@ export function normalizeRawRecord(raw, source = 'file-upload', headerMap = null
   const durationSec = parseDurationToSeconds(rawDuration);
   const formattedDuration = durationSec !== null ? formatSecondsToTime(durationSec) : null;
 
-  // Play count normalization
+  // Incident count normalization
   let playCount = null;
   if (rawPlayCount !== undefined && rawPlayCount !== null && rawPlayCount !== '') {
     const p = parseInt(rawPlayCount, 10);
@@ -168,8 +168,8 @@ export function normalizeRawRecord(raw, source = 'file-upload', headerMap = null
 
   // Review flags check
   const reviewReasons = [];
-  if (!title) reviewReasons.push('Missing track title');
-  if (!artist) reviewReasons.push('Missing artist name');
+  if (!title) reviewReasons.push('Missing suspect name');
+  if (!artist) reviewReasons.push('Missing syndicate classification');
   const needsReview = reviewReasons.length > 0;
 
   // Internal unique track ID
@@ -179,8 +179,8 @@ export function normalizeRawRecord(raw, source = 'file-upload', headerMap = null
 
   return {
     id: fingerprint,
-    title: title || 'Untitled Track',
-    artist: artist || 'Unknown Artist',
+    title: title || 'Unidentified Suspect',
+    artist: artist || 'Unassigned Syndicate',
     album: album,
     playlists: playlists,
     source: source,
