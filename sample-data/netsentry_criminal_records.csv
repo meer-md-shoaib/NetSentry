@@ -1,0 +1,13 @@
+id,name,alias,syndicate,cell,crime_category,fir_number,investigating_agency,jurisdiction,threat_level,status
+REC-NS-201,Satwinder Singh,Goldy Brar,Bishnoi-Brar Inter-state Syndicate,Canada Logistics Wing,Extortion & Contract Homicide,FIR 128/2022 PS City Mansa,Punjab Police AGTF,Punjab & Delhi NCR,RED,Wanted
+REC-NS-202,Lawrence Bishnoi,Don Lawrence,Bishnoi-Brar Inter-state Syndicate,High-Security Custody Nexus,Organized Crime & Extortion,FIR 32/2019 PS Special Cell Delhi,Delhi Police Special Cell,Delhi NCR & Punjab,RED,In Custody
+REC-NS-203,Sandeep,Kala Jathedi,Bishnoi-Brar Inter-state Syndicate,Haryana Tactical Strike Wing,Armed Robbery & Land Grab,FIR 61/2021 PS Crime Branch Delhi,Delhi Police Crime Branch,Haryana & Delhi,ORANGE,Arrested
+REC-NS-204,Priyavrat,Fauji,Bishnoi-Brar Inter-state Syndicate,Sharp Shooter Wing Sonipat,Homicide & Arms Act,FIR 142/2022 PS Kalanwali,Delhi Police Special Cell,Haryana & Punjab,RED,In Custody
+REC-NS-205,Anmol Bishnoi,Bhanu,Bishnoi-Brar Inter-state Syndicate,Transnational Finance Conduit,Hawala Financing & Forgery,FIR 77/2023 NIA RC-38/2022,National Investigation Agency,Pan-India & Global,RED,Wanted
+REC-NS-206,Gurpreet Singh,Lucky Patial,Bambiha-Kaushal Alliance,Armenia Command Wing,Extortion & Gang Warfare,FIR 84/2021 PS SSOC Mohali,Punjab Police SSOC,Punjab & Chandigarh,RED,Wanted
+REC-NS-207,Kaushal Chaudhary,Kaushal Gurugram,Bambiha-Kaushal Alliance,Gurugram Extortion Wing,Real Estate Extortion & Arms,FIR 194/2020 PS Palam Vihar,Haryana STF,Haryana & NCR,ORANGE,In Custody
+REC-NS-208,Tahir Khan,Master Mewati,Mewat Cyber Fraud Ring,Deeg Phishing & APK Hub,Cyber Financial Fraud,FIR 211/2023 PS Cyber Crime Gurugram,Haryana Cyber Unit,Pan-India,ORANGE,Surveillance
+REC-NS-209,Mubin Sheikh,SIM Dealer Mubin,Mewat Cyber Fraud Ring,Bharatpur Fake KYC Hub,Telecom Fraud & Identity Theft,FIR 155/2023 PS Deeg,Rajasthan Police,Rajasthan & NCR,YELLOW,Arrested
+REC-NS-210,Jasdeep Singh,Jaggu Bhagwanpuria,Punjab Border Narcotics Cartel,Majha Drone Reception Wing,NDPS & Trans-Border Smuggling,FIR 99/2020 PS Batala,Punjab Police AGTF & BSF,Punjab Border Belt,RED,In Custody
+REC-NS-211,Dharmender Singh,Goli,Bishnoi-Brar Inter-state Syndicate,Sharp Shooter Wing Sonipat,Armed Assault & Firearms Supply,FIR 180/2022 PS Special Cell Delhi,Delhi Police Special Cell,Delhi NCR,ORANGE,Arrested
+REC-NS-212,Amit Dagar,Dagar Gurugram,Bambiha-Kaushal Alliance,Gurugram Extortion Wing,Extortion & Conspiracy,FIR 72/2021 PS DLF Phase 2,Haryana STF,Haryana & NCR,ORANGE,In Custody
