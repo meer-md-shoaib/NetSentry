@@ -1,10 +1,10 @@
 /**
- * Music Constellation — Storage & Persistence Layer (Phase 2)
+ * NetSentry — Storage & Persistence Layer
  * High-capacity client-side persistence using IndexedDB with fallback to localStorage.
- * Stores normalized tracks, metadata, and metadata enrichment cache.
+ * Stores normalized intelligence records, metadata, and identity resolution cache.
  */
 
-const DB_NAME = 'MusicConstellationDB';
+const DB_NAME = 'NetSentryDB';
 const DB_VERSION = 2;
 const STORE_NAME = 'normalized_tracks';
 const META_STORE = 'library_meta';
@@ -272,23 +272,23 @@ class StorageManager {
   }
 
   /**
-   * Export clean enriched JSON for downstream phases
+   * Export clean intelligence JSON for downstream analysis
    */
-  exportToJSON(data, filename = 'music_constellation_library.json') {
+  exportToJSON(data, filename = 'netsentry_intelligence_library.json') {
     const exportPayload = {
       version: '2.0.0',
-      phase: 2,
+      system: 'NetSentry SIH 2026',
       exported_at: new Date().toISOString(),
       summary: {
-        total_songs: data.records ? data.records.length : data.songsImported,
-        unique_artists: data.uniqueArtists,
-        unique_albums: data.uniqueAlbums,
-        unique_playlists: data.uniquePlaylists,
+        total_suspects: data.records ? data.records.length : data.songsImported,
+        unique_syndicates: data.uniqueArtists,
+        unique_cells: data.uniqueAlbums,
+        unique_agencies: data.uniquePlaylists,
         duplicates_removed: data.duplicatesRemoved,
-        tracks_needing_review: data.tracksNeedingReview,
-        enrichment_report: data.enrichmentReport || null
+        records_needing_review: data.tracksNeedingReview,
+        resolution_report: data.enrichmentReport || null
       },
-      tracks: data.records || []
+      suspects: data.records || []
     };
 
     const jsonStr = JSON.stringify(exportPayload, null, 2);
@@ -304,9 +304,9 @@ class StorageManager {
   }
 
   /**
-   * Export generated Phase 4 spatial constellation JSON for Phase 5 WebGL engine
+   * Export generated spatial network graph JSON
    */
-  exportSpatialJSON(constellationData, filename = 'music_constellation_spatial_universe.json') {
+  exportSpatialJSON(constellationData, filename = 'netsentry_spatial_network.json') {
     const jsonStr = JSON.stringify(constellationData, null, 2);
     const blob = new Blob([jsonStr], { type: 'application/json' });
     const url = URL.createObjectURL(blob);
