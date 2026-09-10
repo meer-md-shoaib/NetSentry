@@ -1,6 +1,6 @@
 /**
- * Music Constellation — 3D Celestial Universe Engine
- * Built from scratch with Three.js (r160) and OrbitControls.
+ * NetSentry — 3D Celestial Intelligence Graph Engine
+ * WebGL-powered 3D visualization of criminal syndicates, cells, and suspects.
  *
  * Implements strict progressive disclosure across 4 zoom levels:
  * Level 1 (Full Universe): Distant celestial clouds, subtle dust, cluster names, 0 line clutter.
@@ -573,9 +573,9 @@ export class Universe3D {
   }
 
   /**
-   * Musical Solar System — builds a procedural Artist → Albums → Songs hierarchy.
-   * Artist = central sun (cross sprite). Albums = planet orbs on concentric rings.
-   * Songs = moon dots orbiting their album planet.
+   * Syndicate Command Cluster — builds a procedural Syndicate → Cells → Suspects hierarchy.
+   * Syndicate Command Anchor = central anchor. Cells = operational hubs on concentric rings.
+   * Suspects = operative nodes orbiting their cell hub.
    * Returns the max system radius so the camera can frame it.
    */
   buildArtistSolarSystem(artistName) {
@@ -595,7 +595,7 @@ export class Universe3D {
     this.solarPlanetPositions.clear();
     this.solarMoonPositions.clear();
 
-    // ── ARTIST SUN ────────────────────────────────────────────
+    // ── SYNDICATE COMMAND ANCHOR ────────────────────────────
     const sunColor = artistColor.clone().lerp(new THREE.Color('#ffffff'), 0.45);
     const sunMat = new THREE.SpriteMaterial({
       map: this.artistTexture,
@@ -609,14 +609,14 @@ export class Universe3D {
     sun.userData = { type: 'solar_sun', artist: artistName };
     this.solarSystemGroup.add(sun);
 
-    // Sun label
+    // Command Anchor label
     const sunLabel = createMinimalLabelSprite(artistName, '#ffffff', 26);
     sunLabel.position.set(0, 22, 0);
     sunLabel.scale.set(36, 9, 1);
     sunLabel.userData = { type: 'solar_sun_label', artist: artistName };
     this.solarSystemGroup.add(sunLabel);
 
-    // ── ALBUM PLANETS ─────────────────────────────────────────
+    // ── OPERATIONAL CELL HUBS ─────────────────────────────────
     const albums = this.albumsDataList.filter(a => a.artist === artistName);
     const tracks = this.starDataList.filter(t => t.artist === artistName);
     const numAlbums = albums.length;
@@ -699,7 +699,7 @@ export class Universe3D {
       albumLabel.userData = { type: 'solar_album_label', albumId: album.id, album: album.album, artist: artistName };
       this.solarSystemGroup.add(albumLabel);
 
-      // ── SONG MOONS ──────────────────────────────────────────
+      // ── SUSPECT OPERATIVE NODES ─────────────────────────────
       const albumSongs = tracks.filter(t => t.album_id === album.id);
       const numSongs = albumSongs.length;
 
@@ -1184,8 +1184,8 @@ export class Universe3D {
   }
 
   /**
-   * Smooth camera flight to focus on an Artist (Level 3)
-   * Builds a Musical Solar System centered on the artist.
+   * Smooth camera flight to focus on a Syndicate (Level 3)
+   * Builds a Syndicate Command Cluster centered on the syndicate.
    */
   focusArtist(artistName) {
     const art = this.artistDataList.find(a => a.artist.toLowerCase() === artistName.toLowerCase());
