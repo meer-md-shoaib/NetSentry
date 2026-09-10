@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NetSentry — Criminal Network Constellation</title>
+  <meta name="description" content="Explore criminal syndicates, alias resolution, and cross-jurisdiction intelligence as an interactive 3D constellation universe.">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body class="universe-body">
+  <!-- Fullscreen 3D WebGL Canvas Container -->
+  <div id="webgl-universe-container" class="universe-fullscreen-container">
+    <!-- Interactive Floating Tooltip -->
+    <div id="universe-3d-tooltip" class="universe-tooltip"></div>
+  </div>
+
+  <!-- Minimal Floating Navigation Bar -->
+  <header class="floating-nav-bar">
+    <div class="nav-left">
+      <div class="nav-brand">
+        <span class="nav-brand-icon">🕸️</span>
+        <span class="nav-brand-title">NetSentry</span>
+        <span class="nav-brand-badge" style="margin-left: 6px; font-size: 10px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); padding: 2px 7px; border-radius: 999px; color: var(--color-aurora-cyan); font-weight: 600; letter-spacing: 0.5px;">SIH 2026</span>
+      </div>
+      <nav id="universe-breadcrumb" class="nav-breadcrumbs" aria-label="Cosmic Exploration Depth">
+        <button class="crumb-btn active" data-level="1">Universe</button>
+      </nav>
+    </div>
+
+    <!-- Center Search Bar with Instant Camera Navigation -->
+    <div class="nav-center">
+      <div class="search-wrapper">
+        <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+        <input type="text" id="universe-search-input" class="universe-search-input" placeholder="Search criminal, alias, syndicate, FIR #, or jurisdiction..." autocomplete="off">
+        <button id="btn-clear-search" class="btn-clear-search" style="display: none;">✕</button>
+
+        <!-- Search Autocomplete Dropdown Popover -->
+        <div id="search-results-popup" class="search-results-popup" style="display: none;"></div>
+      </div>
+    </div>
+
+    <div class="nav-right">
+      <!-- Dataset & Metadata Status Trigger -->
+      <button id="btn-status-trigger" class="btn-ghost-sm" title="Intelligence Pipeline & Network Statistics">
+        <span class="status-pulse-dot" id="status-pulse-dot"></span>
+        Status
+      </button>
+
+      <!-- Multi-Faceted Filters Trigger -->
+      <div class="dropdown-wrapper">
+        <button id="btn-filter-trigger" class="btn-ghost-sm" title="Filter by Crime Category, Agency, or Threat Level">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          Filters <span id="filter-active-count" class="filter-count-badge" style="display: none;">0</span>
+        </button>
+        <!-- Floating Filter Popover -->
+        <div id="filter-popover" class="filter-popover">
+          <div class="filter-popover-header">
+            <span>Filter Crime Universe</span>
+            <button id="btn-reset-filters" class="btn-text-sm">Reset</button>
+          </div>
+          <div class="filter-popover-body">
+            <div class="filter-group">
+              <label class="filter-label">Crime Category</label>
+              <select id="filter-genre-select" class="filter-select">
+                <option value="ALL">All Crime Categories</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <label class="filter-label">Investigating Agency</label>
+              <select id="filter-playlist-select" class="filter-select">
+                <option value="ALL">All Agencies / Jurisdictions</option>
+              </select>
+            </div>
+            <div class="filter-group">
+              <div class="filter-label-row">
+                <label class="filter-label">Activity Timeline</label>
+                <span id="timeline-range-label" class="filter-val-badge">All Periods</span>
+              </div>
+              <div class="timeline-sliders-wrap">
+                <input type="range" id="timeline-slider-min" class="timeline-range" min="2020" max="2026" value="2020">
+                <input type="range" id="timeline-slider-max" class="timeline-range" min="2020" max="2026" value="2026">
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <label class="filter-label">Entity Hierarchy Visibility</label>
+              <div class="filter-entity-row">
+                <label class="filter-check-label"><input type="checkbox" id="filter-type-artists" checked> Syndicates</label>
+                <label class="filter-check-label"><input type="checkbox" id="filter-type-albums" checked> Cells</label>
+                <label class="filter-check-label"><input type="checkbox" id="filter-type-songs" checked> Suspects</label>
+              </div>
+            </div>
+
+            <div class="filter-group">
+              <label class="filter-label">Intelligence Filaments</label>
+              <div class="filter-entity-row">
+                <label class="filter-check-label"><input type="checkbox" id="filter-connections-toggle" checked> Show Intelligence Links</label>
+              </div>
+            </div>
+
+            <!-- Dynamic Result Count Summary -->
+            <div id="filter-results-summary" class="filter-results-summary">
+              <span class="results-title">Showing</span>
+              <div class="results-stats">
+                <span id="filter-count-songs">0 suspects</span> • 
+                <span id="filter-count-artists">0 syndicates</span> • 
+                <span id="filter-count-albums">0 cells</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Crime Ring Scenarios Dropdown -->
+      <div class="dropdown-wrapper">
+        <button id="btn-sample-dropdown" class="btn-ghost-sm" title="Focus specific crime syndicates">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
+          Syndicates ▾
+        </button>
+        <div id="sample-dropdown-menu" class="dropdown-menu">
+          <button class="dropdown-item" id="btn-load-realworld-d">
+            <span class="dropdown-item-title" style="color: var(--color-aurora-cyan); font-weight: 700;">★ Full Interstate Syndicate Network</span>
+            <span class="dropdown-item-sub">All 5 Syndicates, 54 Suspects & Multi-Agency Bridges</span>
+          </button>
+          <button class="dropdown-item" id="btn-load-electronic">
+            <span class="dropdown-item-title" style="color: #38bdf8;">D-West Cartel (Narcotics & Hawala)</span>
+            <span class="dropdown-item-sub">Mohd. Aslam, Tariq Merchant, Nhava Sheva Docks</span>
+          </button>
+          <button class="dropdown-item" id="btn-load-indie">
+            <span class="dropdown-item-title" style="color: #f43f5e;">NCR Arms & Extortion Ring</span>
+            <span class="dropdown-item-sub">Vikram Rathore, Kuldeep Tyagi, Meerut Foundry</span>
+          </button>
+          <button class="dropdown-item" id="btn-load-synthetic309">
+            <span class="dropdown-item-title" style="color: #a855f7;">Cyber Nexus & Crypto Laundering</span>
+            <span class="dropdown-item-sub">David Chen, Rohit Verma, Jamtara Mules</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- Reset / Reload Network Trigger -->
+      <button id="btn-clear-library-trigger" class="btn-ghost-sm" title="Reset View & Refocus Universe">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+        Reset
+      </button>
+
+      <!-- Optional Custom Import Trigger (Kept for external files if desired) -->
+      <button id="btn-upload-trigger" class="btn-ghost-sm" title="Import External Dataset" style="display: none;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+        Import
+      </button>
+    </div>
+  </header>
+
+  <!-- Minimal Floating HUD Camera & Product Controls (Bottom-Right) -->
+  <div class="floating-camera-controls">
+    <!-- 2D / 3D Celestial Projection Toggle -->
+    <button id="btn-toggle-2d" class="hud-circle-btn hud-toggle-btn" title="Toggle 2D Celestial Chart / 3D Universe" aria-label="Toggle 2D/3D">
+      <span id="toggle-2d-text" style="font-size: 11px; font-weight: 700;">2D</span>
+    </button>
+    <!-- Filaments Visibility Toggle -->
+    <button id="btn-toggle-filaments" class="hud-circle-btn hud-toggle-btn active" title="Toggle Connection Filaments" aria-label="Toggle Filaments">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="2" y1="12" x2="22" y2="12"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="12" r="3"/></svg>
+    </button>
+    <button id="btn-3d-zoom-in" class="hud-circle-btn" title="Zoom In (+)" aria-label="Zoom In">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+    <button id="btn-3d-zoom-out" class="hud-circle-btn" title="Zoom Out (-)" aria-label="Zoom Out">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
+    </button>
+    <button id="btn-3d-reset" class="hud-circle-btn" title="Reset View to Universe (0)" aria-label="Reset View">
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
+    </button>
+  </div>
+
+  <!-- Bottom Navigation Guide Hint -->
+  <div class="floating-gesture-hint">
+    <span>Drag: Orbit</span> • <span>Right Drag: Pan</span> • <span>Scroll: Zoom</span> • <span>Click: Inspect</span> • <span>Dbl-Click: Dive In</span>
+  </div>
+
+  <!-- Slide-Over Detail Inspector Drawer (Opens only when an object is clicked) -->
+  <aside id="detail-inspector" class="detail-inspector">
+    <div class="inspector-header">
+      <span class="inspector-category" id="inspector-category">Suspect Intelligence Dossier</span>
+      <button id="btn-close-inspector" class="btn-close-inspector" title="Close">✕</button>
+    </div>
+
+    <div class="inspector-body">
+      <!-- Media artwork & Title -->
+      <div class="inspector-hero">
+        <img id="inspector-artwork" class="inspector-artwork" src="" alt="Suspect Dossier">
+        <div class="inspector-hero-meta">
+          <h2 id="inspector-title" class="inspector-title">Suspect Name</h2>
+          <div id="inspector-subtitle" class="inspector-subtitle">Crime Syndicate</div>
+          <div id="inspector-galaxy-badge" class="inspector-galaxy-badge">Threat Level</div>
+        </div>
+      </div>
+
+      <!-- Audio Preview Player (Kept hidden / available) -->
+      <div id="inspector-audio-wrap" class="inspector-audio-wrap" style="display: none;">
+        <button id="btn-audio-play" class="btn-audio-play" title="Play Wiretap / Audio Evidence">
+          <svg id="audio-icon-play" width="12" height="12" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+          <svg id="audio-icon-pause" width="12" height="12" viewBox="0 0 24 24" fill="currentColor" style="display: none;"><rect x="6" y="4" width="4" height="16"/><rect x="14" y="4" width="4" height="16"/></svg>
+        </button>
+        <div class="audio-progress-track">
+          <div id="audio-progress-bar" class="audio-progress-bar"></div>
+        </div>
+        <span id="audio-time-label" class="audio-time-label">0:00 / 0:30</span>
+      </div>
+
+      <!-- Quick Metadata Grid -->
+      <div class="inspector-meta-grid">
+        <div class="meta-item">
+          <span class="meta-label">Operational Cell</span>
+          <span class="meta-val" id="inspector-album">-</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Crime Classification</span>
+          <span class="meta-val" id="inspector-genre">-</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Primary Agency</span>
+          <span class="meta-val" id="inspector-playlists">-</span>
+        </div>
+        <div class="meta-item">
+          <span class="meta-label">Graph Coordinates</span>
+          <span class="meta-val font-mono" id="inspector-coords">[0, 0, 0]</span>
+        </div>
+        <div class="meta-item" style="grid-column: span 2;">
+          <span class="meta-label">Alias & Identity Status (USP 1)</span>
+          <span class="meta-val" id="inspector-enrichment-status">-</span>
+        </div>
+      </div>
+
+      <!-- External Metadata Verification Section -> Identity & Alias Resolution (USP 1 & 2) -->
+      <div id="inspector-enrichment-details" class="inspector-section" style="display: none; margin-top: 10px;">
+        <h3 class="inspector-section-title">Identity Resolution & Hard Identifiers</h3>
+        <div class="inspector-meta-grid" style="margin-top: 6px;">
+          <div class="meta-item">
+            <span class="meta-label">Resolution Engine</span>
+            <span class="meta-val" id="inspector-mb-provider">NetSentry Multi-Signal</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Match Confidence</span>
+            <span class="meta-val" id="inspector-mb-confidence">-</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Primary FIR Case</span>
+            <span class="meta-val" id="inspector-mb-date">-</span>
+          </div>
+          <div class="meta-item">
+            <span class="meta-label">Resolved Entity</span>
+            <span class="meta-val" id="inspector-mb-canonical">-</span>
+          </div>
+          <div class="meta-item" style="grid-column: span 2;">
+            <span class="meta-label">Corroborating Identifiers & Case Links</span>
+            <div class="meta-val font-mono" id="inspector-mb-ids" style="font-size: 11px; line-height: 1.6; margin-top: 2px;">-</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Connected Local Relationships -->
+      <div class="inspector-section">
+        <h3 class="inspector-section-title">Strongest Connected Criminal Associates</h3>
+        <div id="inspector-relationships-list" class="inspector-rel-list">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+
+      <!-- Related Artists -> Affiliated Crime Factions -->
+      <div class="inspector-section">
+        <h3 class="inspector-section-title">Linked Syndicates & Factions</h3>
+        <div id="inspector-artists-list" class="inspector-rel-list">
+          <!-- Populated dynamically -->
+        </div>
+      </div>
+    </div>
+
+    <div class="inspector-footer">
+      <button id="btn-inspector-flyto" class="btn-inspector-action">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
+        Focus Suspect In Constellation
+      </button>
+    </div>
+  </aside>
+
+  <!-- Hidden File Input for Import -->
+  <input type="file" id="file-input" accept=".csv,.json,.xml,text/csv,application/json,text/xml" style="display: none;">
+
+  <!-- Comprehensive Phase 8 Import Modal -->
+  <div id="upload-modal-backdrop" class="modal-backdrop">
+    <div class="modal-card modal-card-md">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span style="font-size: 16px; color: var(--color-aurora-cyan);">✦</span>
+          <h3 class="modal-title">Import Music Into Universe</h3>
+        </div>
+        <button id="btn-close-upload-modal" class="btn-ghost-sm">✕</button>
+      </div>
+
+      <!-- Import Navigation Tabs -->
+      <div class="import-modal-tabs">
+        <button class="import-tab-btn active" id="tab-import-apple" data-tab="apple">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M18.71 19.5c-.83 1.24-1.71 2.45-3.05 2.47-1.34.03-1.77-.79-3.29-.79-1.53 0-2 .77-3.27.82-1.31.05-2.3-1.32-3.14-2.53C4.25 17 2.94 12.45 4.7 9.39c.87-1.52 2.43-2.48 4.12-2.51 1.28-.02 2.5.87 3.29.87.78 0 2.26-1.07 3.81-.91.65.03 2.47.26 3.64 1.98-.09.06-2.17 1.28-2.15 3.81.03 3.02 2.65 4.03 2.68 4.04-.03.07-.42 1.44-1.38 2.83M15.97 6.37c.63-.77 1.06-1.84.94-2.91-.91.04-2.02.61-2.67 1.37-.58.67-1.09 1.77-.95 2.81 1.02.08 2.05-.51 2.68-1.27z"/></svg>
+          Apple Music
+        </button>
+        <button class="import-tab-btn" id="tab-import-spotify" data-tab="spotify">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12s4.477 10 10 10 10-4.477 10-10S17.523 2 12 2zm4.586 14.424c-.18.295-.563.387-.857.207-2.35-1.435-5.308-1.76-8.793-.963-.335.077-.67-.133-.746-.468-.077-.334.132-.67.467-.746 3.808-.87 7.076-.496 9.722 1.115.294.18.386.562.207.855zm1.226-2.726c-.227.368-.71.482-1.078.256-2.69-1.653-6.79-2.134-9.97-1.168-.413.125-.85-.108-.975-.52-.125-.413.108-.85.52-.975 3.633-1.103 8.147-.568 11.247 1.33.368.226.482.71.256 1.077zm.105-2.835C14.692 8.95 9.375 8.775 6.297 9.71c-.494.15-1.02-.132-1.17-.626-.15-.493.132-1.02.626-1.17 3.532-1.072 9.404-.865 13.115 1.338.445.264.59.838.327 1.282-.264.444-.838.59-1.282.328z"/></svg>
+          Spotify
+        </button>
+        <button class="import-tab-btn" id="tab-import-files" data-tab="files">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+          Files (CSV / JSON)
+        </button>
+        <button class="import-tab-btn" id="tab-import-paste" data-tab="paste">
+          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
+          Quick Paste
+        </button>
+      </div>
+
+      <div class="import-tab-contents">
+        <!-- 1. Apple Music Tab Content -->
+        <div class="import-tab-pane active" id="pane-import-apple">
+          <div class="import-section-desc">
+            Paste any Apple Music album or song link to import its complete tracklist, genres, 600×600 artwork, and 30s audio previews:
+          </div>
+          <div class="import-input-row">
+            <input type="text" id="input-apple-music-url" class="import-text-input" placeholder="https://music.apple.com/us/album/ok-computer/1097861387">
+            <button id="btn-fetch-apple-music" class="btn-primary-sm">Fetch & Build</button>
+          </div>
+          <div class="import-preset-pills">
+            <span class="preset-pills-label">Presets:</span>
+            <button class="preset-pill-btn" data-url="https://music.apple.com/us/album/ok-computer/1097861387">Radiohead — OK Computer</button>
+            <button class="preset-pill-btn" data-url="https://music.apple.com/us/album/after-hours/1499378108">The Weeknd — After Hours</button>
+            <button class="preset-pill-btn" data-url="https://music.apple.com/us/album/blonde/1146195596">Frank Ocean — Blonde</button>
+            <button class="preset-pill-btn" data-url="https://music.apple.com/us/album/in-rainbows/1109714933">Radiohead — In Rainbows</button>
+          </div>
+          <div class="import-divider"><span>OR DROP APPLE MUSIC XML EXPORT</span></div>
+          <div class="import-secondary-hint">
+            In Apple Music / iTunes (macOS or Windows), go to <strong>File → Library → Export Library...</strong> and drop the resulting <code>Library.xml</code> here:
+          </div>
+          <div id="dropzone-apple-xml" class="modal-dropzone mini-dropzone" tabindex="0">
+            <p style="font-size: 11px; color: #ffffff; font-weight: 500;">Drop Apple Music <code>Library.xml</code> here</p>
+          </div>
+        </div>
+
+        <!-- 2. Spotify Tab Content -->
+        <div class="import-tab-pane" id="pane-import-spotify">
+          <div class="import-section-desc">
+            Connect to Spotify via official Web API token, or upload your Spotify privacy export (<code>YourLibrary.json</code> or <code>StreamingHistory.json</code>).
+          </div>
+          <div class="spotify-auth-card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px;">
+              <span style="font-size: 12px; font-weight: 600; color: #ffffff;">Spotify Web API (Top Tracks)</span>
+              <a href="https://developer.spotify.com/console/get-current-user-top-artists-and-tracks/" target="_blank" class="spotify-token-help" style="font-size: 10px; color: #1db954;">Get Token ↗</a>
+            </div>
+            <div class="import-input-row">
+              <input type="password" id="input-spotify-token" class="import-text-input" placeholder="Paste Spotify Bearer Token">
+              <button id="btn-fetch-spotify-top" class="btn-spotify-sm">Load Top Tracks</button>
+            </div>
+          </div>
+          <div class="import-divider"><span>OR UPLOAD SPOTIFY DATA EXPORT FILE</span></div>
+          <div class="import-secondary-hint">
+            Download your personal data from Spotify Privacy settings and drop <code>YourLibrary.json</code> or <code>Streaming_History_Audio_*.json</code>:
+          </div>
+          <div id="dropzone-spotify-json" class="modal-dropzone mini-dropzone" tabindex="0">
+            <p style="font-size: 11px; color: #ffffff; font-weight: 500;">Drop <code>YourLibrary.json</code> or <code>Streaming_History.json</code></p>
+          </div>
+        </div>
+
+        <!-- 3. Files Tab Content (CSV / JSON / XML) -->
+        <div class="import-tab-pane" id="pane-import-files">
+          <div id="dropzone" class="modal-dropzone" tabindex="0">
+            <div class="dropzone-icon">
+              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+            </div>
+            <p style="font-weight: 600; color: #ffffff; font-size: 13px;">Drop CSV, JSON, or XML file here</p>
+            <p style="font-size: 12px; color: var(--color-muted); margin-top: 4px;">Supports Apple Music, Spotify, Rekordbox, and custom playlists</p>
+          </div>
+        </div>
+
+        <!-- 4. Quick Paste Tab Content -->
+        <div class="import-tab-pane" id="pane-import-paste">
+          <div class="import-section-desc">
+            Paste any list of songs (one per line, e.g. <code>Artist - Song Title</code> or <code>Track [Album]</code>):
+          </div>
+          <textarea id="textarea-paste-tracks" class="import-textarea" rows="6" placeholder="Radiohead - Paranoid Android
+The Weeknd - Blinding Lights [After Hours]
+Frank Ocean - Nights
+Beach House - Space Song
+M83 - Midnight City
+Aphex Twin - Windowlicker
+Daft Punk - Instant Crush
+Tame Impala - The Less I Know The Better"></textarea>
+          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
+            <button id="btn-paste-sample" class="btn-text-sm">Insert Sample List</button>
+            <button id="btn-submit-paste" class="btn-primary-sm">Build Universe From Text</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Rich Floating Processing Panel -->
+  <div id="progress-panel" class="floating-progress-panel" style="display: none;">
+    <div class="proc-header">
+      <div class="proc-title-row">
+        <svg class="spinner" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
+        <span class="proc-main-title">Processing Pipeline</span>
+      </div>
+      <span id="proc-file-name" class="proc-file-name">Dataset</span>
+    </div>
+
+    <div class="proc-phases">
+      <!-- 1. IMPORT -->
+      <div class="proc-phase-item" id="proc-step-import">
+        <div class="proc-step-header">
+          <span class="proc-step-name">IMPORT</span>
+          <span class="proc-step-status" id="proc-import-status">Detecting tracks...</span>
+        </div>
+        <div class="proc-step-detail" id="proc-import-detail">Validating schema & deduplicating...</div>
+      </div>
+
+      <!-- 2. METADATA ENRICHMENT -->
+      <div class="proc-phase-item" id="proc-step-enrichment">
+        <div class="proc-step-header">
+          <span class="proc-step-name">METADATA ENRICHMENT</span>
+          <span class="proc-step-status" id="proc-enrichment-status">Pending</span>
+        </div>
+        <div class="proc-progress-bar-wrap" id="proc-enrichment-bar-wrap" style="display: none;">
+          <div class="proc-progress-bar" id="proc-enrichment-bar" style="width: 0%;"></div>
+        </div>
+        <div class="proc-counts-row" id="proc-enrichment-counts" style="display: none;">
+          <span class="count-matched"><strong id="proc-matched-num">0</strong> matched</span> • 
+          <span class="count-partial"><strong id="proc-partial-num">0</strong> partial</span> • 
+          <span class="count-unmatched"><strong id="proc-unmatched-num">0</strong> unmatched</span>
+        </div>
+        <div class="proc-current-track" id="proc-enrichment-current" style="display: none;"></div>
+      </div>
+
+      <!-- 3. RELATIONSHIP ANALYSIS -->
+      <div class="proc-phase-item" id="proc-step-rel">
+        <div class="proc-step-header">
+          <span class="proc-step-name">RELATIONSHIP ANALYSIS</span>
+          <span class="proc-step-status" id="proc-rel-status">Pending</span>
+        </div>
+      </div>
+
+      <!-- 4. CONSTELLATION -->
+      <div class="proc-phase-item" id="proc-step-constellation">
+        <div class="proc-step-header">
+          <span class="proc-step-name">CONSTELLATION</span>
+          <span class="proc-step-status" id="proc-constellation-status">Pending</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Clear Confirmation Modal -->
+  <div id="clear-modal-backdrop" class="modal-backdrop">
+    <div class="modal-card modal-card-sm">
+      <div class="modal-header">
+        <h3 class="modal-title" style="color: #f87171;">Reset Network View?</h3>
+        <button id="clear-modal-cancel-x" class="btn-ghost-sm">✕</button>
+      </div>
+      <p style="font-size: 12px; color: #94a3b8; line-height: 1.5; margin: 12px 0 16px;">
+        This will reset the active filters, close inspector drawers, and return the camera to the full interstate intelligence network overview.
+      </p>
+      <div style="display: flex; justify-content: flex-end; gap: 8px;">
+        <button id="clear-modal-cancel-btn" class="btn-ghost-sm">Cancel</button>
+        <button id="clear-modal-confirm-btn" class="btn-danger-sm">Reset View</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Dataset & Metadata Status Modal -->
+  <div id="status-modal-backdrop" class="modal-backdrop">
+    <div class="modal-card modal-card-lg">
+      <div class="modal-header">
+        <div style="display: flex; align-items: center; gap: 8px;">
+          <span class="status-pulse-dot active"></span>
+          <h3 class="modal-title">NetSentry Intelligence Pipeline & Resolution Metrics</h3>
+        </div>
+        <button id="btn-close-status-modal" class="btn-ghost-sm">✕</button>
+      </div>
+
+      <!-- Tabs -->
+      <div class="status-modal-tabs">
+        <button class="status-tab-btn active" id="tab-btn-overview">Network & Centrality Overview</button>
+        <button class="status-tab-btn" id="tab-btn-log">Alias Resolution Log (USP 1) <span id="log-count-pill" class="badge-pill">0</span></button>
+      </div>
+
+      <div class="status-modal-body" id="status-modal-body">
+        <!-- Populated dynamically with honest calculated metadata and inspection log -->
+      </div>
+    </div>
+  </div>
+
+  <!-- Floating Connection Line Explanation Tooltip -->
+  <div id="connection-tooltip" class="connection-tooltip" style="display: none;"></div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="toast-container"></div>
+
+  <!-- Application Logic -->
+  <script type="module" src="src/app.js?v=8.0.2"></script>
+</body>
+</html>

@@ -1,0 +1,222 @@
+[
+  {
+    "title": "A Walk",
+    "artist": "Tycho",
+    "album": "Dive",
+    "playlist": "Late Night Deep Focus",
+    "genre": "Ambient / Electronic",
+    "release_date": "2011-11-15",
+    "duration": "05:16",
+    "play_count": 84
+  },
+  {
+    "title": "Hours",
+    "artist": "Tycho",
+    "album": "Dive",
+    "playlist": "Late Night Deep Focus",
+    "genre": "Ambient / Electronic",
+    "release_date": "2011-11-15",
+    "duration": "05:44",
+    "play_count": 62
+  },
+  {
+    "title": "Coastal Brake",
+    "artist": "Tycho",
+    "album": "Dive",
+    "playlist": "Sunrise Chill",
+    "genre": "Ambient / Electronic",
+    "release_date": "2011-11-15",
+    "duration": "05:34",
+    "play_count": 45
+  },
+  {
+    "title": "Dayvan Cowboy",
+    "artist": "Boards of Canada",
+    "album": "The Campfire Headphase",
+    "playlist": "Late Night Deep Focus",
+    "genre": "IDM / Downtempo",
+    "release_date": "2005-10-17",
+    "duration": "05:00",
+    "play_count": 112
+  },
+  {
+    "title": "Music Is Math",
+    "artist": "Boards of Canada",
+    "album": "Geogaddi",
+    "playlist": "Late Night Deep Focus",
+    "genre": "IDM / Downtempo",
+    "release_date": "2002-02-18",
+    "duration": "05:21",
+    "play_count": 78
+  },
+  {
+    "title": "Circling",
+    "artist": "Four Tet",
+    "album": "There Is Love in You",
+    "playlist": "Late Night Deep Focus",
+    "genre": "Folktronica / Microhouse",
+    "release_date": "2010-01-25",
+    "duration": "05:18",
+    "play_count": 91
+  },
+  {
+    "title": "Love Cry",
+    "artist": "Four Tet",
+    "album": "There Is Love in You",
+    "playlist": "Club Euphoria",
+    "genre": "Folktronica / Microhouse",
+    "release_date": "2010-01-25",
+    "duration": "09:13",
+    "play_count": 53
+  },
+  {
+    "title": "Emerald Rush",
+    "artist": "Jon Hopkins",
+    "album": "Singularity",
+    "playlist": "Club Euphoria",
+    "genre": "Electronic / Techno",
+    "release_date": "2018-05-04",
+    "duration": "05:36",
+    "play_count": 128
+  },
+  {
+    "title": "Singularity",
+    "artist": "Jon Hopkins",
+    "album": "Singularity",
+    "playlist": "Club Euphoria",
+    "genre": "Electronic / Techno",
+    "release_date": "2018-05-04",
+    "duration": "06:29",
+    "play_count": 74
+  },
+  {
+    "title": "Immunity",
+    "artist": "Jon Hopkins",
+    "album": "Immunity",
+    "playlist": "Sunrise Chill",
+    "genre": "Ambient / Minimal",
+    "release_date": "2013-06-04",
+    "duration": "09:56",
+    "play_count": 99
+  },
+  {
+    "title": "Kerala",
+    "artist": "Bonobo",
+    "album": "Migration",
+    "playlist": "Late Night Deep Focus",
+    "genre": "Trip Hop / Downtempo",
+    "release_date": "2017-01-13",
+    "duration": "03:57",
+    "play_count": 145
+  },
+  {
+    "title": "Break Apart (feat. Rhye)",
+    "artist": "Bonobo",
+    "album": "Migration",
+    "playlist": "Sunrise Chill",
+    "genre": "Trip Hop / Downtempo",
+    "release_date": "2017-01-13",
+    "duration": "04:34",
+    "play_count": 110
+  },
+  {
+    "title": "Shadows (feat. Jordan Rakei)",
+    "artist": "Bonobo",
+    "album": "Fragments",
+    "playlist": "Sunrise Chill",
+    "genre": "Trip Hop / Downtempo",
+    "release_date": "2022-01-14",
+    "duration": "04:45",
+    "play_count": 67
+  },
+  {
+    "title": "Odessa",
+    "artist": "Caribou",
+    "album": "Swim",
+    "playlist": "Club Euphoria",
+    "genre": "Indie Electronic / Neo-Psychedelia",
+    "release_date": "2010-04-19",
+    "duration": "05:15",
+    "play_count": 88
+  },
+  {
+    "title": "Can't Do Without You",
+    "artist": "Caribou",
+    "album": "Our Love",
+    "playlist": "Club Euphoria",
+    "genre": "Indie Electronic / Neo-Psychedelia",
+    "release_date": "2014-10-06",
+    "duration": "03:56",
+    "play_count": 210
+  },
+  {
+    "title": "Midnight City",
+    "artist": "M83",
+    "album": "Hurry Up, We're Dreaming",
+    "playlist": "Club Euphoria",
+    "genre": "Synthpop / Dream Pop",
+    "release_date": "2011-10-18",
+    "duration": "04:03",
+    "play_count": 340
+  },
+  {
+    "title": "Wait",
+    "artist": "M83",
+    "album": "Hurry Up, We're Dreaming",
+    "playlist": "Sunrise Chill",
+    "genre": "Dream Pop / Post-Rock",
+    "release_date": "2011-10-18",
+    "duration": "05:43",
+    "play_count": 195
+  },
+  {
+    "title": "Sun",
+    "artist": "Caribou",
+    "album": "Swim",
+    "playlist": "Club Euphoria",
+    "genre": "Indie Electronic",
+    "release_date": "2010-04-19",
+    "duration": "05:44",
+    "play_count": 48
+  },
+  {
+    "title": "A Walk",
+    "artist": "Tycho",
+    "album": "Dive",
+    "playlist": "Sunrise Chill",
+    "genre": "Ambient / Electronic",
+    "release_date": "2011-11-15",
+    "duration": "05:16",
+    "play_count": 84
+  },
+  {
+    "title": "Open Eye Signal",
+    "artist": "Jon Hopkins",
+    "album": "Immunity",
+    "playlist": "Late Night Deep Focus",
+    "genre": "Electronic / Techno",
+    "release_date": "2013-06-04",
+    "duration": "07:48",
+    "play_count": 160
+  },
+  {
+    "title": "",
+    "artist": "Kiasmos",
+    "album": "Kiasmos",
+    "playlist": "Late Night Deep Focus",
+    "genre": "Minimal Techno",
+    "release_date": "2014-10-27",
+    "duration": "05:12",
+    "play_count": 15
+  },
+  {
+    "title": "Looped",
+    "artist": "",
+    "album": "Kiasmos",
+    "playlist": "Late Night Deep Focus",
+    "genre": "Minimal Techno",
+    "release_date": "2014-10-27",
+    "duration": "06:17",
+    "play_count": 42
+  }
+]
