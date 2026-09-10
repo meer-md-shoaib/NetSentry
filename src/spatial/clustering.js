@@ -1,6 +1,6 @@
 /**
- * Music Constellation — Galaxy Clustering & Hierarchy Engine (Phase 4)
- * Density-based cluster partitioning, automatic galaxy naming, and centroid calculations.
+ * NetSentry — Network Cluster Partitioning & Hierarchy Engine
+ * Density-based cluster partitioning, automatic syndicate naming, and centroid calculations.
  */
 
 const GALAXY_PALETTES = [
@@ -111,13 +111,14 @@ export class GalaxyClusterer {
       });
       const radius = Math.round(Math.sqrt(maxDistSq) * 100) / 100;
 
-      // 3. Extract, Normalize & Prioritize Genre/Style Tags for Data-Driven Galaxy Naming
+      // 3. Extract, Normalize & Prioritize Crime Category/Modus Operandi Tags
       const tagScores = new Map();
-      const genericWords = new Set(['music', 'songs', 'tracks', 'audio', 'sound']);
+      const genericWords = new Set(['crime', 'case', 'fir', 'record', 'data', 'suspect']);
 
       memberTracks.forEach(t => {
-        if (t.genre) {
-          const parts = t.genre.split(/[\/,&|]+/);
+        const cat = t.crime_category || t.genre;
+        if (cat) {
+          const parts = cat.split(/[\/,&|]+/);
           parts.forEach(p => {
             const norm = normalizeTag(p);
             if (norm && !genericWords.has(norm.toLowerCase())) {
@@ -125,7 +126,7 @@ export class GalaxyClusterer {
             }
           });
         }
-        (t.tags || []).forEach(tag => {
+        (t.tags || t.modus_operandi || []).forEach(tag => {
           const norm = normalizeTag(tag);
           if (norm && !genericWords.has(norm.toLowerCase())) {
             tagScores.set(norm, (tagScores.get(norm) || 0) + 3);
@@ -133,10 +134,13 @@ export class GalaxyClusterer {
         });
       });
 
-      // 4. Unique Artists in Galaxy
+      // 4. Unique Syndicates in Cluster
       const artistSet = new Set();
       memberTracks.forEach(t => {
-        if (t.artist && t.artist !== 'Unknown Artist') artistSet.add(t.artist);
+        const syn = t.syndicate || t.artist;
+        if (syn && syn !== 'Unknown Syndicate' && syn !== 'Unknown Artist' && syn !== 'Independent Operative') {
+          artistSet.add(syn);
+        }
       });
       const artistsList = Array.from(artistSet);
 
@@ -158,16 +162,16 @@ export class GalaxyClusterer {
         if (filteredTags.length >= 3) break;
       }
 
-      // Generate purely data-driven musical galaxy name
+      // Generate purely data-driven criminal network cluster name
       let cleanGalaxyName = '';
       if (filteredTags.length >= 2) {
         cleanGalaxyName = `${filteredTags[0]} • ${filteredTags[1]}`;
       } else if (filteredTags.length === 1) {
         cleanGalaxyName = filteredTags[0];
       } else if (artistsList.length > 0) {
-        cleanGalaxyName = `${artistsList[0]} System`;
+        cleanGalaxyName = `${artistsList[0]} Network`;
       } else {
-        cleanGalaxyName = `Soundscape ${clusterIdx + 1}`;
+        cleanGalaxyName = `Command Network ${clusterIdx + 1}`;
       }
 
       // Ensure unique cluster naming

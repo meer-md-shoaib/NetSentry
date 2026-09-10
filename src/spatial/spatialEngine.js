@@ -1,5 +1,5 @@
 /**
- * Music Constellation — Spatial Constellation Engine (Phase 4)
+ * NetSentry — Spatial Intelligence Graph Engine
  * Orchestrates distance matrix, 3D coordinate reduction, cluster hierarchy, and JSON export.
  */
 

@@ -1,5 +1,5 @@
 /**
- * Music Constellation — 3D Dimensionality Reduction (Phase 4)
+ * NetSentry — 3D Dimensionality Reduction for Criminal Networks
  * Deterministic UMAP & Classical Multidimensional Scaling (MDS) implementation.
  * Fixed PRNG seed guarantees 100% mathematical reproducibility for the same dataset.
  */
