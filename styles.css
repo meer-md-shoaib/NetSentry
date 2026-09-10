@@ -570,7 +570,7 @@ html, body.universe-body {
   top: 18px;
   bottom: 18px;
   right: 18px;
-  width: 350px;
+  width: 380px;
   background: rgba(7, 10, 20, 0.88);
   backdrop-filter: blur(24px);
   -webkit-backdrop-filter: blur(24px);
@@ -583,6 +583,7 @@ html, body.universe-body {
   transform: translateX(calc(100% + 24px));
   transition: transform 320ms var(--ease-out);
   overflow: hidden;
+  font-size: 14px;
 }
 
 .detail-inspector.open {
@@ -598,7 +599,7 @@ html, body.universe-body {
 }
 
 .inspector-category {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   text-transform: uppercase;
   letter-spacing: 0.5px;
@@ -609,7 +610,7 @@ html, body.universe-body {
   background: none;
   border: none;
   color: var(--color-muted);
-  font-size: 14px;
+  font-size: 16px;
   cursor: pointer;
   padding: 4px;
 }
@@ -651,7 +652,7 @@ html, body.universe-body {
 }
 
 .inspector-title {
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 700;
   color: #ffffff;
   white-space: nowrap;
@@ -660,7 +661,7 @@ html, body.universe-body {
 }
 
 .inspector-subtitle {
-  font-size: 12px;
+  font-size: 14px;
   color: var(--color-muted);
 }
 
@@ -671,7 +672,7 @@ html, body.universe-body {
   background: rgba(56, 189, 248, 0.12);
   border: 1px solid rgba(56, 189, 248, 0.3);
   border-radius: 9999px;
-  font-size: 10px;
+  font-size: 12px;
   font-weight: 600;
   color: var(--color-aurora-cyan);
   width: fit-content;
@@ -749,13 +750,13 @@ html, body.universe-body {
 }
 
 .meta-label {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--color-faint);
   text-transform: uppercase;
 }
 
 .meta-val {
-  font-size: 11px;
+  font-size: 13px;
   color: #ffffff;
   font-weight: 500;
   white-space: nowrap;
@@ -774,7 +775,7 @@ html, body.universe-body {
 }
 
 .inspector-section-title {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: var(--color-muted);
   text-transform: uppercase;
@@ -805,18 +806,18 @@ html, body.universe-body {
 }
 
 .rel-name {
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 600;
   color: #ffffff;
 }
 
 .rel-reason {
-  font-size: 10px;
+  font-size: 12px;
   color: var(--color-muted);
 }
 
 .rel-score {
-  font-size: 11px;
+  font-size: 13px;
   font-family: var(--font-mono);
   color: var(--color-aurora-cyan);
 }
@@ -833,7 +834,7 @@ html, body.universe-body {
   background: rgba(56, 189, 248, 0.12);
   border-radius: 8px;
   color: #ffffff;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 600;
   display: flex;
   align-items: center;
@@ -1368,18 +1369,18 @@ html, body.universe-body {
   border-radius: 4px;
   background: rgba(255, 255, 255, 0.08);
   border: 1px solid rgba(255, 255, 255, 0.15);
-  font-size: 10px;
+  font-size: 12px;
   color: #e2e8f0;
   margin-right: 4px;
   margin-bottom: 4px;
 }
 .hard-id-item {
-  padding: 4px 8px;
+  padding: 5px 9px;
   background: rgba(15, 23, 42, 0.7);
   border-left: 2px solid var(--color-aurora-cyan);
   margin-bottom: 5px;
   border-radius: 0 4px 4px 0;
-  font-size: 10.5px;
+  font-size: 12.5px;
 }
 
 .status-modal-tabs {
