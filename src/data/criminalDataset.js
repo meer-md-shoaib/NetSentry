@@ -1538,6 +1538,169 @@ export const CRIMINALS = [
     explainability: 'Acts as overseas handler for Mohd. Aslam. Forges shipping bills for containers dispatched from Jebel Ali Port to Mundra and JNPT.',
     tags: ['interpol', 'red-notice', 'jebel-ali', 'dri', 'transnational'],
     avatarSeed: 'zahid'
+  },
+  {
+    id: 'crm-055',
+    name: 'Satwinder Singh',
+    aliases: ['Goldy Brar', 'Goldy Canada', 'Satwinderjeet'],
+    aliasConfidence: 0.98,
+    syndicate: 'NCR Arms & Contract Extortion Ring',
+    role: 'Overseas Operations & Hit Squad Planner',
+    cell: 'Foreign Command & Logistics Wing',
+    crimeType: 'Contract Killings & Arms Supply',
+    jurisdiction: 'Punjab Police AGTF',
+    secondaryJurisdictions: ['Delhi Police Special Cell', 'Interpol Red Notice Division'],
+    riskScore: 0.99,
+    riskLevel: 'CRITICAL',
+    firRecords: [
+      'FIR 128/2022 PS City Mansa',
+      'Interpol Red Notice #A-5491/6-2022',
+      'NIA RC-38/2022/NIA/DLI'
+    ],
+    hardIdentifiers: {
+      phone: '+1 647-892-0194',
+      imei: '359102830192834',
+      vehicle: 'Cadillac Escalade (Ontario Registry)',
+      accounts: ['TD Canada Trust #...9012']
+    },
+    explainability: 'Directly coordinates hits and weapon procurement across state borders via encrypted VoIP and local logistics cells.',
+    tags: ['interpol', 'red-notice', 'extortion', 'arms-trafficking', 'special-cell'],
+    avatarSeed: 'goldy'
+  },
+  {
+    id: 'crm-056',
+    name: 'Gurpreet Singh',
+    aliases: ['Lucky Patial', 'Lucky Armenia', 'Gurpreet Patiala'],
+    aliasConfidence: 0.96,
+    syndicate: 'NCR Arms & Contract Extortion Ring',
+    role: 'Interstate Rival Command Chief',
+    cell: 'Foreign Command & Logistics Wing',
+    crimeType: 'Extortion & Gang Warfare',
+    jurisdiction: 'Punjab Police SSOC',
+    secondaryJurisdictions: ['Haryana STF', 'Delhi Police Crime Branch'],
+    riskScore: 0.97,
+    riskLevel: 'CRITICAL',
+    firRecords: [
+      'FIR 84/2021 PS SSOC Mohali',
+      'Interpol Red Notice #A-1102/8-2021'
+    ],
+    hardIdentifiers: {
+      phone: '+374 91-440291',
+      imei: '358291048192031',
+      vehicle: 'Armenia Transit Network',
+      accounts: ['ArmSwissBank #...7741']
+    },
+    explainability: 'Controls extortion calls and counter-gang operations from abroad, utilizing local NCR hitmen.',
+    tags: ['extortion', 'interstate', 'gang-warfare', 'ssoc'],
+    avatarSeed: 'lucky'
+  },
+  {
+    id: 'crm-057',
+    name: 'Tahir Khan',
+    aliases: ['Master Mewati', 'Tahir Deeg', 'APK Master'],
+    aliasConfidence: 0.94,
+    syndicate: 'Cyber Nexus & Mule Banking Syndicate',
+    role: 'Phishing APK & Digital Extortion Architect',
+    cell: 'Deeg Phishing & APK Hub',
+    crimeType: 'Digital Arrest & Banking Fraud',
+    jurisdiction: 'Haryana Cyber Crime Unit',
+    secondaryJurisdictions: ['Delhi Police IFSO', 'Rajasthan Police'],
+    riskScore: 0.93,
+    riskLevel: 'HIGH',
+    firRecords: [
+      'FIR 211/2023 PS Cyber Crime Gurugram',
+      'National Cybercrime Portal Ref #1930/DEL/2024'
+    ],
+    hardIdentifiers: {
+      phone: '+91 98123-90812',
+      imei: '864910284719203',
+      vehicle: 'Bolero Camper (RJ-05-UA-8821)',
+      accounts: ['Airtel Payments Bank #...3319', 'Paytm Bank #...9102']
+    },
+    explainability: 'Creates malicious police/CBI impersonation APKs and distributes them to over 40 calling sheds in Mewat.',
+    tags: ['apk-trojan', 'digital-arrest', 'mewat', 'ifso', 'cyber'],
+    avatarSeed: 'tahir'
+  },
+  {
+    id: 'crm-058',
+    name: 'Jasdeep Singh',
+    aliases: ['Jaggu Bhagwanpuria', 'Jaggu Border', 'Kabbadi Jaggu'],
+    aliasConfidence: 0.97,
+    syndicate: 'Coastal Seaborne Contraband Syndicate',
+    role: 'Drone Air-Drop Logistics Specialist',
+    cell: 'Trans-Border Infiltration Wing',
+    crimeType: 'NDPS & Drone Contraband Influx',
+    jurisdiction: 'Punjab Police AGTF',
+    secondaryJurisdictions: ['Border Security Force (BSF)', 'Narcotics Control Bureau (NCB)'],
+    riskScore: 0.98,
+    riskLevel: 'CRITICAL',
+    firRecords: [
+      'FIR 99/2020 PS Batala',
+      'NCB Crime Case #NCB/CDG/04/2023'
+    ],
+    hardIdentifiers: {
+      phone: '+91 97810-44910',
+      imei: '359104829102849',
+      vehicle: 'Mahindra Scorpio (PB-02-CB-1109)',
+      accounts: ['Punjab National Bank #...4481']
+    },
+    explainability: 'Pioneered GPS-calibrated night drone delivery drops for weapons and high-purity narcotics along international border corridors.',
+    tags: ['drone-contraband', 'ndps', 'cross-border', 'bsf', 'agtf'],
+    avatarSeed: 'jaggu'
+  },
+  {
+    id: 'crm-059',
+    name: 'Suresh Kumar',
+    aliases: ['Subedar', 'Suresh Sotiganj', 'Master Lathe'],
+    aliasConfidence: 0.93,
+    syndicate: 'NCR Arms & Contract Extortion Ring',
+    role: 'Underground Armory Fabricator',
+    cell: 'Meerut Precision Foundry',
+    crimeType: 'Weapons Manufacturing & Arms Act',
+    jurisdiction: 'UP STF',
+    secondaryJurisdictions: ['Delhi Police Special Cell'],
+    riskScore: 0.95,
+    riskLevel: 'CRITICAL',
+    firRecords: [
+      'FIR 412/2022 PS Lisari Gate',
+      'UP STF Case #STF/MRT/19/2023'
+    ],
+    hardIdentifiers: {
+      phone: '+91 94122-88192',
+      imei: '861940284910293',
+      vehicle: 'Mahindra Bolero Pickup (UP-15-BT-4410)',
+      accounts: ['Canara Bank Meerut #...8812']
+    },
+    explainability: 'Runs clandestine machine shop creating .30 bore and 9mm weapon replicas with rifled barrels for gang modules.',
+    tags: ['illegal-arms', 'up-stf', 'sotiganj', 'arms-act'],
+    avatarSeed: 'suresh'
+  },
+  {
+    id: 'crm-060',
+    name: 'Rizwan Sheikh',
+    aliases: ['Rizwan Hawala', 'Rizwan Zaveri', 'Chhota Angadia'],
+    aliasConfidence: 0.95,
+    syndicate: 'D-West Cartel (Narcotics & Hawala)',
+    role: 'Angadia Cash Pooling Coordinator',
+    cell: 'Domestic Hawala Distribution',
+    crimeType: 'Hawala Transfers & Money Laundering',
+    jurisdiction: 'Maharashtra ATS',
+    secondaryJurisdictions: ['Enforcement Directorate (ED)', 'Income Tax Investigation Wing'],
+    riskScore: 0.92,
+    riskLevel: 'HIGH',
+    firRecords: [
+      'FIR 29/2023 PS MRA Marg',
+      'ED ECIR #ECIR/MBZO-I/44/2023'
+    ],
+    hardIdentifiers: {
+      phone: '+91 98200-11928',
+      imei: '357194028491029',
+      vehicle: 'Honda City (MH-01-DE-9941)',
+      accounts: ['IndusInd Bank Fort Branch #...0092', 'Standard Chartered #...3319']
+    },
+    explainability: 'Coordinates courier cash pickups across bullion markets in Zaveri Bazaar to settle syndicate contraband accounts.',
+    tags: ['hawala', 'zaveri-bazaar', 'angadia', 'ed', 'ats'],
+    avatarSeed: 'rizwan'
   }
 ];
 
@@ -1726,6 +1889,46 @@ export const RELATIONSHIPS = [
     weight: 0.87,
     type: 'HIGH_GRADE_FICN_PAYMENT',
     explanation: 'Counterfeit currency partially used for local logistics and ammunition transit'
+  },
+  // 8. Transnational Hit Logistics Link:
+  {
+    source: 'crm-055', // Satwinder Singh @ Goldy Brar
+    target: 'crm-013', // Vikram Rathore (NCR Kingpin)
+    weight: 0.98,
+    type: 'INTERSTATE_WEAPONS_PROCUREMENT',
+    explanation: 'Direct encrypted orders coordinating interstate safehouses and automatic weapons caches'
+  },
+  // 9. Underground Foundry Arms Pipeline:
+  {
+    source: 'crm-059', // Suresh Kumar (Subedar Foundry)
+    target: 'crm-014', // Kuldeep Tyagi (NCR Foundry)
+    weight: 0.96,
+    type: 'CLANDESTINE_LATHE_CONSORTIUM',
+    explanation: 'Joint tooling consortium supplying forged 9mm barrels across Western UP and Haryana'
+  },
+  // 10. Cyber APK Mule Laundering Axis:
+  {
+    source: 'crm-057', // Tahir Khan @ Master Mewati
+    target: 'crm-023', // David Chen (Cyber Master Crypto)
+    weight: 0.95,
+    type: 'APK_MULE_CRYPTO_ROUTING',
+    explanation: 'Siphoned banking victims funds funneled through Mewat mule network into USDT mixers'
+  },
+  // 11. Maritime & Drone Contraband Confluence:
+  {
+    source: 'crm-058', // Jasdeep Singh @ Jaggu Bhagwanpuria
+    target: 'crm-031', // Ismail Koli (Coastal Contraband)
+    weight: 0.92,
+    type: 'CONTRABAND_CONSIGNMENT_SPLIT',
+    explanation: 'Cross-corridor intelligence: maritime consignments coordinated with border aerial drops'
+  },
+  // 12. Angadia Hawala Bullion Settlement:
+  {
+    source: 'crm-060', // Rizwan Sheikh (Zaveri Hawala)
+    target: 'crm-002', // Tariq Merchant (D-West Hawala)
+    weight: 0.97,
+    type: 'BULLION_OFFSET_LEDGER',
+    explanation: 'Direct weekly settlement balancing Zaveri Bazaar Angadia pickups against Dubai Hawala ledgers'
   }
 ];
 
