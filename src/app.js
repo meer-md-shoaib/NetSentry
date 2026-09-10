@@ -883,7 +883,7 @@ function openAlbumInspector(album) {
 
   btnInspectorFlyTo.innerHTML = `
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
-    Focus Cell In Constellation
+    Focus Cell In Network Graph
   `;
   btnInspectorFlyTo.onclick = () => {
     universe3D.focusAlbum(album.id);
@@ -981,7 +981,7 @@ function openArtistInspector(artistName) {
 
   btnInspectorFlyTo.innerHTML = `
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
-    Focus Syndicate In Constellation
+    Focus Syndicate In Network Graph
   `;
   btnInspectorFlyTo.onclick = () => {
     universe3D.focusArtist(artistName);
