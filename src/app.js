@@ -366,9 +366,9 @@ function populateFilters(constellation) {
   const meta = constellation.filter_metadata;
   if (!meta) return;
 
-  // Genre select
+  // Crime category select
   if (filterGenreSelect) {
-    filterGenreSelect.innerHTML = '<option value="ALL">All Genres</option>';
+    filterGenreSelect.innerHTML = '<option value="ALL">All Crime Categories</option>';
     (meta.genresList || []).forEach(g => {
       const opt = document.createElement('option');
       opt.value = g;
@@ -377,9 +377,9 @@ function populateFilters(constellation) {
     });
   }
 
-  // Playlist select
+  // Investigating agency select
   if (filterPlaylistSelect) {
-    filterPlaylistSelect.innerHTML = '<option value="ALL">All Playlists</option>';
+    filterPlaylistSelect.innerHTML = '<option value="ALL">All Investigating Agencies</option>';
     (meta.playlistsList || []).forEach(p => {
       const opt = document.createElement('option');
       opt.value = p;
