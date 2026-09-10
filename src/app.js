@@ -3,7 +3,7 @@
  * Minimal UI, fullscreen immersive navigation, and instant search fly-to.
  */
 
-import { ingestMusicData, ingestRawRecords, parseCSV, parseJSON, parseManifestText } from './parser.js?v=8.0.2';
+import { ingestNetworkData, ingestRawRecords, parseCSV, parseJSON, parseManifestText } from './parser.js?v=8.0.2';
 import { storage } from './storage.js?v=8.0.2';
 import { enrichmentEngine } from './enrichment/enrichmentEngine.js?v=8.0.2';
 import { relationshipEngine } from './intelligence/relationshipEngine.js?v=8.0.2';

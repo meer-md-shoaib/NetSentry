@@ -148,7 +148,7 @@ export function parseJSON(jsonText) {
     rawList = parsed;
   } else if (parsed && typeof parsed === 'object') {
     // Check common container properties
-    const candidates = ['tracks', 'songs', 'library', 'items', 'playlist', 'music'];
+    const candidates = ['records', 'suspects', 'criminals', 'nodes', 'data', 'items', 'syndicates'];
     for (const key of candidates) {
       if (Array.isArray(parsed[key])) {
         rawList = parsed[key];
@@ -156,17 +156,17 @@ export function parseJSON(jsonText) {
       }
     }
     if (rawList.length === 0) {
-      // If it's a single track object
-      if (parsed.title || parsed.track_name || parsed.artist) {
+      // If it's a single record object
+      if (parsed.title || parsed.suspect || parsed.name || parsed.artist || parsed.syndicate) {
         rawList = [parsed];
       } else {
-        throw new Error('JSON structure did not contain an array of music records.');
+        throw new Error('JSON structure did not contain an array of intelligence records.');
       }
     }
   }
 
   if (rawList.length === 0) {
-    throw new Error('JSON dataset contains no track records.');
+    throw new Error('JSON dataset contains no suspect records.');
   }
 
   // Detect sample headers from first few records
@@ -388,9 +388,9 @@ export async function ingestRawRecords(
 /**
  * Chunked ingestion & deduplication pipeline for uploaded file content
  */
-export async function ingestMusicData(
+export async function ingestNetworkData(
   rawContent,
-  fileType, // 'csv' | 'json' | 'xml'
+  fileType, // 'csv' | 'json'
   sourceName = 'user-import',
   onProgress = () => {}
 ) {
@@ -401,14 +401,12 @@ export async function ingestMusicData(
   const trimmed = typeof rawContent === 'string' ? rawContent.trim() : '';
   let parsedResult;
 
-  if (fileType.toLowerCase() === 'xml' || trimmed.startsWith('<?xml') || trimmed.startsWith('<plist')) {
-    parsedResult = parseXML(rawContent);
-  } else if (fileType.toLowerCase() === 'csv') {
+  if (fileType.toLowerCase() === 'csv') {
     parsedResult = parseCSV(rawContent);
   } else if (fileType.toLowerCase() === 'json') {
     parsedResult = parseJSON(rawContent);
   } else {
-    throw new Error(`Unsupported file type: ${fileType}. Supported types: CSV, JSON, Apple Music XML.`);
+    throw new Error(`Unsupported file type: ${fileType}. Supported types: CSV, JSON.`);
   }
 
   const { rawRecords, headerMap } = parsedResult;
