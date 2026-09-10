@@ -453,9 +453,9 @@ function applyFilters() {
   const res = universe3D.setFilter({ genre, playlist, yearMin, yearMax, entityTypes });
   updateFilterBadge();
 
-  if (filterCountSongs) filterCountSongs.textContent = `${res.songs} songs`;
-  if (filterCountArtists) filterCountArtists.textContent = `${res.artists} artists`;
-  if (filterCountAlbums) filterCountAlbums.textContent = `${res.albums} albums`;
+  if (filterCountSongs) filterCountSongs.textContent = `${res.songs} suspects`;
+  if (filterCountArtists) filterCountArtists.textContent = `${res.artists} syndicates`;
+  if (filterCountAlbums) filterCountAlbums.textContent = `${res.albums} cells`;
 
   const isFiltered = genre !== 'ALL' || playlist !== 'ALL' || 
     yearMin > parseInt(timelineSliderMin?.min || '1960', 10) || 
@@ -463,7 +463,7 @@ function applyFilters() {
     !entityTypes.artists || !entityTypes.albums || !entityTypes.songs || !showConnections;
 
   if (isFiltered) {
-    showToast(`Showing: ${res.songs} songs • ${res.artists} artists • ${res.albums} albums`, 'info', 2200);
+    showToast(`Showing: ${res.songs} suspects • ${res.artists} syndicates • ${res.albums} cells`, 'info', 2200);
   }
 }
 
@@ -1185,9 +1185,9 @@ async function runRecordsPipeline(rawRecords, sourceLabel) {
     // Reset any active filters on new load
     if (universe3D) {
       const res = universe3D.setFilter({ genre: 'ALL', playlist: 'ALL', yearMin: null, yearMax: null });
-      if (filterCountSongs) filterCountSongs.textContent = `${res.songs} songs`;
-      if (filterCountArtists) filterCountArtists.textContent = `${res.artists} artists`;
-      if (filterCountAlbums) filterCountAlbums.textContent = `${res.albums} albums`;
+      if (filterCountSongs) filterCountSongs.textContent = `${res.songs} suspects`;
+      if (filterCountArtists) filterCountArtists.textContent = `${res.artists} syndicates`;
+      if (filterCountAlbums) filterCountAlbums.textContent = `${res.albums} cells`;
     }
     updateFilterBadge();
 
@@ -1195,7 +1195,7 @@ async function runRecordsPipeline(rawRecords, sourceLabel) {
     uploadModalBackdrop.classList.remove('open');
     detailInspector.classList.remove('open');
 
-    showToast(`Universe mapped: ${constellation.total_songs} stars in ${constellation.total_galaxies} galaxies.`, 'success', 3500);
+    showToast(`Network synthesized: ${constellation.total_songs} suspects mapped across ${constellation.total_galaxies} syndicates.`, 'success', 3500);
   } catch (err) {
     console.error('Pipeline error:', err);
     showToast(`Pipeline Error: ${err.message}`, 'error', 4500);
@@ -1345,12 +1345,12 @@ function setupEventListeners() {
           yearMax: null,
           entityTypes: { artists: true, albums: true, songs: true }
         });
-        if (filterCountSongs) filterCountSongs.textContent = `${res.songs} songs`;
-        if (filterCountArtists) filterCountArtists.textContent = `${res.artists} artists`;
-        if (filterCountAlbums) filterCountAlbums.textContent = `${res.albums} albums`;
+        if (filterCountSongs) filterCountSongs.textContent = `${res.songs} suspects`;
+        if (filterCountArtists) filterCountArtists.textContent = `${res.artists} syndicates`;
+        if (filterCountAlbums) filterCountAlbums.textContent = `${res.albums} cells`;
       }
       updateFilterBadge();
-      showToast('Filters cleared — all constellation nodes visible', 'info', 1600);
+      showToast('Filters reset — full network visible', 'info', 1600);
     });
   }
 
