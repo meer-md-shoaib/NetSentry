@@ -1,6 +1,6 @@
 /**
- * Music Constellation — Semantic Intelligence Engine (Phase 3)
- * Fast client-side TF-IDF vectorizer and cosine similarity across artist bios, tags, and metadata.
+ * NetSentry — Semantic Intelligence Engine
+ * Fast client-side TF-IDF vectorizer and cosine similarity across suspect dossiers, modus operandi, and crime metadata.
  */
 
 // Common English stop words
@@ -21,7 +21,7 @@ export class SemanticVectorizer {
   constructor() {
     this.vocabulary = new Map(); // word -> index
     this.idf = []; // index -> IDF weight
-    this.vectors = new Map(); // trackId -> Float64Array
+    this.vectors = new Map(); // recordId -> Float64Array
   }
 
   /**
@@ -37,23 +37,23 @@ export class SemanticVectorizer {
   }
 
   /**
-   * Build TF-IDF model from all tracks in the library
+   * Build TF-IDF model from all criminal intelligence records
    */
-  fit(tracks) {
+  fit(records) {
     this.vocabulary.clear();
     this.vectors.clear();
-    const docCount = tracks.length;
+    const docCount = records.length;
     if (docCount === 0) return;
 
-    // 1. Extract documents text
-    const documents = tracks.map(t => {
-      const bio = t.artist_biography || t.artist_description || '';
-      const tags = (t.tags || []).join(' ');
-      const genre = t.genre || '';
-      const album = t.album || '';
-      const artist = t.artist || '';
-      const title = t.title || '';
-      return `${artist} ${artist} ${title} ${album} ${genre} ${genre} ${tags} ${tags} ${bio}`;
+    // 1. Extract documents text from dossier notes, tags, crime categories, cells, and syndicates
+    const documents = records.map(r => {
+      const dossier = r.intelligence_notes || r.artist_biography || r.artist_description || '';
+      const tags = (r.tags || r.modus_operandi || []).join(' ');
+      const category = r.crime_category || r.genre || '';
+      const cell = r.cell || r.album || '';
+      const syndicate = r.syndicate || r.artist || '';
+      const name = r.name || r.title || '';
+      return `${syndicate} ${syndicate} ${name} ${cell} ${category} ${category} ${tags} ${tags} ${dossier}`;
     });
 
     // 2. Count Document Frequencies (DF)
@@ -82,8 +82,8 @@ export class SemanticVectorizer {
       this.idf[idx] = Math.log((docCount + 1) / (df + 1)) + 1.0;
     });
 
-    // 5. Build L2-normalized TF-IDF vectors for each track
-    tracks.forEach((track, i) => {
+    // 5. Build L2-normalized TF-IDF vectors for each intelligence record
+    records.forEach((record, i) => {
       const tokens = tokenizedDocs[i];
       const vector = new Float64Array(vocabSize);
 
@@ -112,17 +112,17 @@ export class SemanticVectorizer {
         }
       }
 
-      this.vectors.set(track.id, vector);
+      this.vectors.set(record.id, vector);
     });
   }
 
   /**
-   * Compute Cosine Similarity between two tracks [0, 1]
+   * Compute Cosine Similarity between two intelligence records [0, 1]
    */
-  computeSimilarity(trackIdA, trackIdB) {
-    if (trackIdA === trackIdB) return 1.0;
-    const vecA = this.vectors.get(trackIdA);
-    const vecB = this.vectors.get(trackIdB);
+  computeSimilarity(recordIdA, recordIdB) {
+    if (recordIdA === recordIdB) return 1.0;
+    const vecA = this.vectors.get(recordIdA);
+    const vecB = this.vectors.get(recordIdB);
     if (!vecA || !vecB) return 0.0;
 
     let dot = 0;

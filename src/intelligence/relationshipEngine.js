@@ -1,6 +1,7 @@
 /**
- * Music Constellation — Relationship & Intelligence Engine (Phase 3)
- * Combines 4 signals (Metadata, Semantic, Playlist, Artist) into tunable, explainable similarity scores.
+ * NetSentry — Criminal Relationship & Intelligence Engine
+ * Combines 4 signals (FIR/Crime Metadata, Semantic NLP Dossier, Multi-Agency Case Co-occurrence, Syndicate Nexus)
+ * into tunable, explainable similarity scores for law enforcement analysts.
  */
 
 import { SemanticVectorizer } from './semantic.js';
@@ -13,21 +14,32 @@ import {
 export class RelationshipEngine {
   constructor() {
     this.vectorizer = new SemanticVectorizer();
-    this.tracks = [];
-    this.trackMap = new Map();
+    this.records = [];
+    this.recordMap = new Map();
     this.explicitLinks = new Map();
 
-    // Configurable Tunable Weights (Defaults as planned)
+    // Configurable Tunable Weights for Criminal Intelligence
     this.weights = {
-      metadata: 0.25,
-      semantic: 0.30,
-      playlist: 0.25,
-      artist: 0.20
+      metadata: 0.25, // FIR & crime category match
+      semantic: 0.30, // Modus operandi & dossier NLP similarity
+      playlist: 0.25, // Cross-jurisdiction case co-occurrence
+      artist: 0.20    // Syndicate affiliation & nexus
     };
   }
 
+  // Alias for backward compatibility with existing component calls
+  get tracks() {
+    return this.records;
+  }
+  set tracks(val) {
+    this.records = val;
+  }
+  get trackMap() {
+    return this.recordMap;
+  }
+
   /**
-   * Set explicit intelligence relationships (e.g. CDR, Hawala, FIR links)
+   * Set explicit intelligence relationships (e.g. CDR phone logs, Hawala trails, co-accused FIR links)
    */
   setExplicitLinks(links = []) {
     this.explicitLinks.clear();
@@ -40,19 +52,19 @@ export class RelationshipEngine {
   }
 
   /**
-   * Index library tracks and build semantic text corpus
+   * Index intelligence records and build semantic text corpus
    */
-  indexLibrary(tracks) {
-    this.tracks = tracks || [];
-    this.trackMap.clear();
-    this.tracks.forEach(t => this.trackMap.set(t.id, t));
+  indexLibrary(records) {
+    this.records = records || [];
+    this.recordMap.clear();
+    this.records.forEach(r => this.recordMap.set(r.id, r));
 
-    // Train semantic vectorizer across all enriched tracks
-    this.vectorizer.fit(this.tracks);
+    // Train semantic vectorizer across all intelligence dossiers
+    this.vectorizer.fit(this.records);
   }
 
   /**
-   * Update weights dynamically
+   * Update weights dynamically from UI sliders
    */
   setWeights(newWeights) {
     this.weights = {
@@ -62,34 +74,34 @@ export class RelationshipEngine {
   }
 
   /**
-   * Compute multi-signal similarity between two tracks
+   * Compute multi-signal similarity between two suspects/entities
    */
-  computePairwiseRelationship(trackA, trackB) {
-    if (trackA.id === trackB.id) {
+  computePairwiseRelationship(recordA, recordB) {
+    if (recordA.id === recordB.id) {
       return {
         totalScore: 1.0,
         signals: { metadata: 1.0, semantic: 1.0, playlist: 1.0, artist: 1.0 },
         contributions: { metadata: 25, semantic: 25, playlist: 25, artist: 25 },
-        explanation: 'Identical entity'
+        explanation: 'Identical suspect entity'
       };
     }
 
-    // Check explicit intelligence connection first
-    const linkKey = `${trackA.id}__${trackB.id}`;
+    // Check explicit intelligence connection first (CDR, Hawala, FIR)
+    const linkKey = `${recordA.id}__${recordB.id}`;
     if (this.explicitLinks.has(linkKey)) {
       const explicit = this.explicitLinks.get(linkKey);
       return {
         totalScore: explicit.weight || 0.92,
         signals: { metadata: 0.9, semantic: 0.9, playlist: 0.85, artist: 0.95 },
         contributions: { metadata: 20, semantic: 30, playlist: 20, artist: 30 },
-        explanation: explicit.explanation || `Connected by ${explicit.type || 'intelligence trail'}`
+        explanation: explicit.explanation || `Connected via ${explicit.type || 'intelligence link'}`
       };
     }
 
-    const sMeta = computeMetadataSimilarity(trackA, trackB);
-    const sSem = this.vectorizer.computeSimilarity(trackA.id, trackB.id);
-    const sPlay = computePlaylistSimilarity(trackA, trackB);
-    const sArt = computeArtistSimilarity(trackA, trackB);
+    const sMeta = computeMetadataSimilarity(recordA, recordB);
+    const sSem = this.vectorizer.computeSimilarity(recordA.id, recordB.id);
+    const sPlay = computePlaylistSimilarity(recordA, recordB);
+    const sArt = computeArtistSimilarity(recordA, recordB);
 
     const wMeta = this.weights.metadata;
     const wSem = this.weights.semantic;
@@ -111,7 +123,7 @@ export class RelationshipEngine {
     const cArt = totalScore > 0 ? Math.round(((wArt * sArt) / weightedScore) * 100) : 25;
 
     // Generate explainability narrative
-    const explanation = this.generateExplanation(trackA, trackB, {
+    const explanation = this.generateExplanation(recordA, recordB, {
       sMeta, sSem, sPlay, sArt, cMeta, cSem, cPlay, cArt
     });
 
@@ -136,61 +148,70 @@ export class RelationshipEngine {
   /**
    * Explainable text generation based on signal strengths
    */
-  generateExplanation(trackA, trackB, data) {
+  generateExplanation(recordA, recordB, data) {
     const { sMeta, sSem, sPlay, sArt } = data;
     const totalScore = (data.cMeta * sMeta + data.cSem * sSem + data.cPlay * sPlay + data.cArt * sArt) / 100;
     const scorePct = Math.round((totalScore || sMeta) * 100);
 
-    // 1. Same artist
-    if ((trackA.artist || '').toLowerCase().trim() === (trackB.artist || '').toLowerCase().trim()) {
-      if (trackA.album && trackB.album && trackA.album === trackB.album && trackA.album !== 'Unknown Album') {
-        return `Same album · ${trackA.album}`;
+    const synA = (recordA.syndicate || recordA.artist || '').toLowerCase().trim();
+    const synB = (recordB.syndicate || recordB.artist || '').toLowerCase().trim();
+    const cellA = (recordA.cell || recordA.album || '').trim();
+    const cellB = (recordB.cell || recordB.album || '').trim();
+
+    // 1. Same syndicate
+    if (synA && synA === synB && synA !== 'independent operative' && synA !== 'unknown artist') {
+      if (cellA && cellB && cellA === cellB && cellA !== 'Unknown Operational Cell' && cellA !== 'Unknown Album') {
+        return `Same operational cell · ${cellA}`;
       }
-      return 'Same artist';
+      return `Same crime syndicate · ${recordA.syndicate || recordA.artist}`;
     }
 
-    // 2. Associated acts / collaborators
+    // 2. Syndicate logistics affinity / known nexus
     if (sArt >= 0.70) {
-      return `Artist affinity · ${Math.round(sArt * 100)}%`;
+      return `Syndicate nexus affinity · ${Math.round(sArt * 100)}%`;
     }
 
-    // 3. Shared playlist dominant
-    const sharedPlaylists = (trackA.playlists || []).filter(p => (trackB.playlists || []).includes(p));
-    if (sharedPlaylists.length > 0) {
-      return `Shared playlist · ${sharedPlaylists[0]}`;
+    // 3. Shared investigating agency / joint operation
+    const agenciesA = recordA.agencies || recordA.playlists || [];
+    const agenciesB = recordB.agencies || recordB.playlists || [];
+    const sharedAgencies = agenciesA.filter(p => agenciesB.includes(p));
+    if (sharedAgencies.length > 0) {
+      return `Cross-agency link · ${sharedAgencies[0]}`;
     }
 
-    // 4. Semantic similarity dominant
+    // 4. Semantic similarity dominant (shared modus operandi)
     if (sSem >= 0.45 && sSem >= sMeta) {
-      return `Semantic similarity · ${scorePct}%`;
+      return `Modus operandi match · ${scorePct}%`;
     }
 
-    // 5. Metadata similarity (genre/tags) dominant
+    // 5. Metadata similarity dominant (crime category/IPC sections)
     if (sMeta >= 0.45) {
-      if (trackA.genre && trackA.genre === trackB.genre) {
-        return `Shared genre · ${trackA.genre}`;
+      const catA = recordA.crime_category || recordA.genre;
+      const catB = recordB.crime_category || recordB.genre;
+      if (catA && catA === catB) {
+        return `Shared classification · ${catA}`;
       }
-      return `Metadata similarity · ${scorePct}%`;
+      return `Offense pattern match · ${scorePct}%`;
     }
 
     // 6. Multi-signal contextual affinity
-    return `Multi-signal affinity · ${scorePct}%`;
+    return `Multi-signal intelligence link · ${scorePct}%`;
   }
 
   /**
-   * Find top related songs for a target track
+   * Find top related suspects for a target suspect
    */
-  getRelatedTracks(targetTrackId, topN = 6) {
-    const target = this.trackMap.get(targetTrackId);
+  getRelatedTracks(targetRecordId, topN = 6) {
+    const target = this.recordMap.get(targetRecordId);
     if (!target) return [];
 
     const candidates = [];
-    this.tracks.forEach(t => {
-      if (t.id === targetTrackId) return;
+    this.records.forEach(r => {
+      if (r.id === targetRecordId) return;
 
-      const rel = this.computePairwiseRelationship(target, t);
+      const rel = this.computePairwiseRelationship(target, r);
       candidates.push({
-        track: t,
+        track: r,
         score: rel.totalScore,
         signals: rel.signals,
         contributions: rel.contributions,
@@ -202,47 +223,51 @@ export class RelationshipEngine {
     return candidates.slice(0, topN);
   }
 
+  getRelatedSuspects(targetRecordId, topN = 6) {
+    return this.getRelatedTracks(targetRecordId, topN);
+  }
+
   /**
-   * Find top related artists for a target artist
+   * Find top related syndicates for a target crime syndicate
    */
-  getRelatedArtists(targetArtistName, topN = 5) {
-    if (!targetArtistName) return [];
-    const targetLower = targetArtistName.toLowerCase().trim();
+  getRelatedArtists(targetSyndicateName, topN = 5) {
+    if (!targetSyndicateName) return [];
+    const targetLower = targetSyndicateName.toLowerCase().trim();
 
-    // Gather tracks by target artist
-    const targetTracks = this.tracks.filter(t => (t.artist || '').toLowerCase().trim() === targetLower);
-    if (targetTracks.length === 0) return [];
+    // Gather records by target syndicate
+    const targetRecords = this.records.filter(r => (r.syndicate || r.artist || '').toLowerCase().trim() === targetLower);
+    if (targetRecords.length === 0) return [];
 
-    // Map other artists to their average score with target artist's tracks
-    const artistScores = new Map(); // artistName -> { sumScore, count, explanations: [] }
+    // Map other syndicates to their average score with target syndicate records
+    const syndicateScores = new Map();
 
-    this.tracks.forEach(otherTrack => {
-      const otherArtist = otherTrack.artist;
-      const otherLower = (otherArtist || '').toLowerCase().trim();
-      if (!otherArtist || otherLower === targetLower) return;
+    this.records.forEach(otherRecord => {
+      const otherSyn = otherRecord.syndicate || otherRecord.artist;
+      const otherLower = (otherSyn || '').toLowerCase().trim();
+      if (!otherSyn || otherLower === targetLower) return;
 
-      // Average similarity across sample tracks
       let maxScore = 0;
       let bestExplanation = '';
 
-      targetTracks.forEach(tTrack => {
-        const rel = this.computePairwiseRelationship(tTrack, otherTrack);
+      targetRecords.forEach(tRecord => {
+        const rel = this.computePairwiseRelationship(tRecord, otherRecord);
         if (rel.totalScore > maxScore) {
           maxScore = rel.totalScore;
           bestExplanation = rel.explanation;
         }
       });
 
-      if (!artistScores.has(otherArtist)) {
-        artistScores.set(otherArtist, {
-          artist: otherArtist,
+      if (!syndicateScores.has(otherSyn)) {
+        syndicateScores.set(otherSyn, {
+          artist: otherSyn,
+          syndicate: otherSyn,
           score: maxScore,
           explanation: bestExplanation,
-          sampleArtwork: otherTrack.artwork_url || null,
-          genre: otherTrack.genre || null
+          sampleArtwork: otherRecord.artwork_url || null,
+          genre: otherRecord.crime_category || otherRecord.genre || null
         });
       } else {
-        const existing = artistScores.get(otherArtist);
+        const existing = syndicateScores.get(otherSyn);
         if (maxScore > existing.score) {
           existing.score = maxScore;
           existing.explanation = bestExplanation;
@@ -250,9 +275,13 @@ export class RelationshipEngine {
       }
     });
 
-    const list = Array.from(artistScores.values());
+    const list = Array.from(syndicateScores.values());
     list.sort((a, b) => b.score - a.score);
     return list.slice(0, topN);
+  }
+
+  getRelatedSyndicates(targetSyndicateName, topN = 5) {
+    return this.getRelatedArtists(targetSyndicateName, topN);
   }
 }
 
