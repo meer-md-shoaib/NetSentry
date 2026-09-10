@@ -994,7 +994,7 @@ function renderStatusModal() {
       </div>
       <div class="status-card status-highlight">
         <div class="status-metric-label">Operational Network</div>
-        <div style="font-size: 13px; font-weight: 700; color: #ffffff; margin-top: 2px;">NetSentry Interstate Criminal Intelligence Constellation</div>
+        <div style="font-size: 13px; font-weight: 700; color: #ffffff; margin-top: 2px;">NetSentry Interstate Criminal Intelligence Network</div>
         <div class="status-metric-val">${s.totalRecords || 54} <span style="font-size: 11px; font-weight: normal; color: var(--color-muted);">criminal suspect nodes mapped across 5 syndicates</span></div>
       </div>
     </div>
@@ -1030,7 +1030,7 @@ function renderStatusModal() {
 
     <div>
       <div class="status-section-title">
-        <span>Active Crime Syndicates (Macro Galaxies)</span>
+        <span>Active Interstate Crime Syndicates</span>
         <span style="color: #34d399; font-size: 10px;">✓ 5 Active Rings</span>
       </div>
       <div class="status-grid">
@@ -1619,7 +1619,7 @@ Ibrahim Kaskar - Coastal Contraband [Arabian Sea Landing Operations]`;
 }
 
 /**
- * Loads NetSentry Criminal Network Constellation into spatial and 3D universe
+ * Loads NetSentry Criminal Network into spatial and 3D graph
  */
 export function loadCriminalNetwork(filterSyndicate = null) {
   let records = getNormalizedCriminalRecords();
