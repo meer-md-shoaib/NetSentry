@@ -1,34 +1,38 @@
 /**
- * Music Constellation — Multi-Signal Similarity Calculators (Phase 3)
- * Implements Metadata, Playlist Co-occurrence, and Artist Relationship signals.
+ * NetSentry — Multi-Signal Intelligence Similarity Calculators
+ * Implements Modus Operandi/FIR Metadata, Multi-Agency Case Co-occurrence, and Cartel/Syndicate Nexus signals.
  */
 
-// Known music collective, side-project, and collaborator networks
-const KNOWN_ARTIST_AFFINITIES = [
-  // Thom Yorke & Jonny Greenwood: Radiohead <-> The Smile <-> Atoms for Peace
-  { artists: ['radiohead', 'the smile', 'atoms for peace', 'thom yorke'], score: 0.95 },
-  // Dan Snaith: Caribou <-> Daphni <-> Manitoba
-  { artists: ['caribou', 'daphni', 'manitoba'], score: 0.95 },
-  // Ambient & IDM frequent collaborators and touring peers
-  { artists: ['tycho', 'boards of canada', 'bonobo', 'jon hopkins', 'four tet', 'caribou', 'kiasmos'], score: 0.65 },
-  // Dream Pop & Indie Rock peers
-  { artists: ['beach house', 'slowdive', 'cocteau twins'], score: 0.75 },
-  { artists: ['phoebe bridgers', 'boygenius', 'lucy dacus', 'julien baker', 'better oblivion community center'], score: 0.95 },
-  { artists: ['arctic monkeys', 'the last shadow puppets', 'miles kane'], score: 0.90 },
-  { artists: ['tame impala', 'pond', 'gum', 'kevin parker'], score: 0.85 }
+// Known crime syndicates, operational wings, and logistics nexus networks
+const KNOWN_SYNDICATE_AFFINITIES = [
+  // Inter-state Lawrence-Bishnoi Syndicate <-> Goldy Brar Operational Module <-> North Transit Ring
+  { syndicates: ['bishnoi syndicate', 'goldy brar cell', 'lawrence syndicate', 'north transit ring'], score: 0.95 },
+  // Bambiha Syndicate <-> Kaushal Chaudhary Group <-> Lucky Patial Module
+  { syndicates: ['bambiha gang', 'kaushal chaudhary group', 'lucky patial module'], score: 0.95 },
+  // Mewat Financial Fraud Nexus <-> Bharatpur Module <-> Alwar SIM Cloning Ring
+  { syndicates: ['mewat cyber syndicate', 'bharatpur module', 'alwar sim cloning ring', 'deeg financial wing'], score: 0.90 },
+  // Trans-Border Narcotics Corridor <-> Hawala Conduit
+  { syndicates: ['border drone infiltration', 'amritsar conduit', 'jammu trans-border ring', 'taran taran logistics'], score: 0.85 },
+  // Extortion & Arms Smuggling Ring
+  { syndicates: ['rohtak arms module', 'delhi ncr extortion ring', 'west up logistics cell'], score: 0.80 }
 ];
 
 /**
- * Split genre string into canonical tokens
+ * Split crime category / IPC code string into canonical classification tokens
  */
-export function extractGenreTokens(genreStr) {
-  if (!genreStr || typeof genreStr !== 'string') return [];
-  return genreStr
+export function extractClassificationTokens(classStr) {
+  if (!classStr || typeof classStr !== 'string') return [];
+  return classStr
     .toLowerCase()
     .split(/[\/,&|+\-]+/)
     .map(s => s.trim())
     .filter(s => s.length > 2);
 }
+
+/**
+ * Alias for backward compatibility
+ */
+export const extractGenreTokens = extractClassificationTokens;
 
 /**
  * Jaccard Index of two sets
@@ -44,97 +48,101 @@ export function jaccardSimilarity(setA, setB) {
 }
 
 /**
- * Signal 1: Metadata Similarity [0, 1]
- * Compares genre tokens, community tags, and release era proximity.
+ * Signal 1: Crime Metadata & Modus Operandi Similarity [0, 1]
+ * Compares crime category tokens, investigative tags, and temporal offense window proximity.
  */
-export function computeMetadataSimilarity(trackA, trackB) {
-  // 1. Genre similarity
-  const genresA = new Set(extractGenreTokens(trackA.genre));
-  const genresB = new Set(extractGenreTokens(trackB.genre));
-  const genreScore = jaccardSimilarity(genresA, genresB);
+export function computeMetadataSimilarity(recordA, recordB) {
+  // 1. Crime category / classification similarity
+  const catA = new Set(extractClassificationTokens(recordA.crime_category || recordA.genre || ''));
+  const catB = new Set(extractClassificationTokens(recordB.crime_category || recordB.genre || ''));
+  const categoryScore = jaccardSimilarity(catA, catB);
 
-  // 2. Tag similarity
-  const tagsA = new Set((trackA.tags || []).map(t => t.toLowerCase().trim()));
-  const tagsB = new Set((trackB.tags || []).map(t => t.toLowerCase().trim()));
+  // 2. Modus operandi & investigative tag similarity
+  const tagsA = new Set((recordA.tags || recordA.modus_operandi || []).map(t => t.toLowerCase().trim()));
+  const tagsB = new Set((recordB.tags || recordB.modus_operandi || []).map(t => t.toLowerCase().trim()));
   const tagScore = jaccardSimilarity(tagsA, tagsB);
 
-  // 3. Temporal Era Proximity
+  // 3. Temporal Offense Window Proximity
   let temporalScore = 0.5; // neutral fallback
-  const yearA = trackA.release_date ? parseInt(trackA.release_date.substring(0, 4), 10) : null;
-  const yearB = trackB.release_date ? parseInt(trackB.release_date.substring(0, 4), 10) : null;
+  const dateStrA = recordA.first_offense_date || recordA.release_date || recordA.date || '';
+  const dateStrB = recordB.first_offense_date || recordB.release_date || recordB.date || '';
+  const yearA = dateStrA ? parseInt(dateStrA.substring(0, 4), 10) : null;
+  const yearB = dateStrB ? parseInt(dateStrB.substring(0, 4), 10) : null;
 
   if (yearA && yearB && !isNaN(yearA) && !isNaN(yearB)) {
     const diff = Math.abs(yearA - yearB);
-    temporalScore = Math.exp(-diff / 8.0); // Exponential decay with 8-year half-life
+    temporalScore = Math.exp(-diff / 8.0); // Exponential decay
   }
 
-  // Same album boost
-  let albumScore = 0.0;
-  if (trackA.album && trackB.album && trackA.album !== 'Unknown Album') {
-    if (trackA.album.toLowerCase().trim() === trackB.album.toLowerCase().trim()) {
-      albumScore = 1.0;
+  // Same operational cell / hub boost
+  let cellScore = 0.0;
+  const cellA = (recordA.cell || recordA.album || '').trim();
+  const cellB = (recordB.cell || recordB.album || '').trim();
+  if (cellA && cellB && cellA !== 'Unknown Operational Cell' && cellA !== 'Unknown Album') {
+    if (cellA.toLowerCase() === cellB.toLowerCase()) {
+      cellScore = 1.0;
     }
   }
 
-  // Composite metadata similarity
-  const score = (0.40 * genreScore) + (0.35 * tagScore) + (0.15 * temporalScore) + (0.10 * albumScore);
+  // Composite crime metadata similarity
+  const score = (0.40 * categoryScore) + (0.35 * tagScore) + (0.15 * temporalScore) + (0.10 * cellScore);
   return Math.max(0.0, Math.min(1.0, score));
 }
 
 /**
- * Signal 3: Playlist Co-occurrence [0, 1]
- * Measures how frequently two songs co-occur in the user's playlists.
+ * Signal 3: Investigating Agency & Joint Operation Co-occurrence [0, 1]
+ * Measures how frequently two suspects co-occur across agency case files and joint operations.
  */
-export function computePlaylistSimilarity(trackA, trackB) {
-  const playlistsA = new Set(trackA.playlists || []);
-  const playlistsB = new Set(trackB.playlists || []);
+export function computePlaylistSimilarity(recordA, recordB) {
+  const casesA = new Set(recordA.agencies || recordA.playlists || []);
+  const casesB = new Set(recordB.agencies || recordB.playlists || []);
 
-  if (playlistsA.size === 0 || playlistsB.size === 0) return 0.0;
+  if (casesA.size === 0 || casesB.size === 0) return 0.0;
 
   let sharedCount = 0;
-  playlistsA.forEach(pl => {
-    if (playlistsB.has(pl)) sharedCount++;
+  casesA.forEach(item => {
+    if (casesB.has(item)) sharedCount++;
   });
 
   if (sharedCount === 0) return 0.0;
 
-  // Jaccard index
-  const union = playlistsA.size + playlistsB.size - sharedCount;
+  // Jaccard index of joint case appearances
+  const union = casesA.size + casesB.size - sharedCount;
   const jaccard = union > 0 ? sharedCount / union : 0.0;
 
-  // Bonus for multiple co-curations
-  const coCurationWeight = Math.min(1.0, 0.4 + (sharedCount * 0.3));
-  return Math.min(1.0, Math.max(jaccard, coCurationWeight));
+  // Bonus for multiple joint agency chargesheets
+  const coInvestigationWeight = Math.min(1.0, 0.4 + (sharedCount * 0.3));
+  return Math.min(1.0, Math.max(jaccard, coInvestigationWeight));
 }
 
 /**
- * Signal 4: Artist Relationship [0, 1]
- * Measures same-artist identity and side-project / collaborator affinities.
+ * Signal 4: Syndicate Affiliation & Logistics Nexus [0, 1]
+ * Measures same-cartel identity and inter-state logistics nexus affinities.
  */
-export function computeArtistSimilarity(trackA, trackB) {
-  const artistA = (trackA.artist || '').toLowerCase().trim();
-  const artistB = (trackB.artist || '').toLowerCase().trim();
+export function computeArtistSimilarity(recordA, recordB) {
+  const synA = (recordA.syndicate || recordA.artist || '').toLowerCase().trim();
+  const synB = (recordB.syndicate || recordB.artist || '').toLowerCase().trim();
 
-  if (!artistA || !artistB || artistA === 'unknown artist' || artistB === 'unknown artist') {
+  if (!synA || !synB || synA === 'independent operative' || synB === 'independent operative' || synA === 'unknown artist') {
     return 0.0;
   }
 
-  // Exact same artist
-  if (artistA === artistB) {
+  // Exact same crime syndicate
+  if (synA === synB) {
     return 1.0;
   }
 
-  // Check known affinities & side-projects
-  for (const group of KNOWN_ARTIST_AFFINITIES) {
-    if (group.artists.includes(artistA) && group.artists.includes(artistB)) {
+  // Check known cartel affinities & operational nexus
+  for (const group of KNOWN_SYNDICATE_AFFINITIES) {
+    if (group.syndicates.includes(synA) && group.syndicates.includes(synB)) {
       return group.score;
     }
   }
 
-  // Check shared mentions in Wikipedia biography
-  const bioA = (trackA.artist_biography || '').toLowerCase();
-  const bioB = (trackB.artist_biography || '').toLowerCase();
-  if (bioA.includes(artistB) || bioB.includes(artistA)) {
+  // Check shared intelligence mentions in criminal dossier notes
+  const notesA = (recordA.intelligence_notes || recordA.artist_biography || '').toLowerCase();
+  const notesB = (recordB.intelligence_notes || recordB.artist_biography || '').toLowerCase();
+  if (notesA.includes(synB) || notesB.includes(synA)) {
     return 0.70;
   }
 
