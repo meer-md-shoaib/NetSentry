@@ -1391,14 +1391,14 @@ function setupEventListeners() {
   if (btnToggle2D) {
     btnToggle2D.addEventListener('click', () => {
       if (!universe3D || !universe3D.constellation) {
-        showToast('Load a music library first', 'info', 2000);
+        showToast('Load an intelligence dataset first', 'info', 2000);
         return;
       }
       is2DMode = !is2DMode;
       universe3D.set2DMode(is2DMode);
       if (toggleText2D) toggleText2D.textContent = is2DMode ? '3D' : '2D';
       btnToggle2D.classList.toggle('active', is2DMode);
-      showToast(is2DMode ? 'Celestial Chart (2D) View' : '3D Universe View', 'info', 1800);
+      showToast(is2DMode ? 'Tactical Map (2D) View' : '3D Intelligence Graph View', 'info', 1800);
     });
   }
 
@@ -1406,7 +1406,7 @@ function setupEventListeners() {
   if (btnToggleFilaments) {
     btnToggleFilaments.addEventListener('click', () => {
       if (!universe3D || !universe3D.constellation) {
-        showToast('Load a music library first', 'info', 2000);
+        showToast('Load an intelligence dataset first', 'info', 2000);
         return;
       }
       filamentsVisible = !filamentsVisible;

@@ -114,8 +114,7 @@ export function parseCSV(csvText) {
 
 /**
  * Robust JSON parser
- * Normalizes standard track arrays, Spotify GDPR exports (YourLibrary / StreamingHistory),
- * and nested playlist containers.
+ * Normalizes suspect record arrays, agency manifests, and intelligence containers.
  */
 export function parseJSON(jsonText) {
   if (!jsonText || typeof jsonText !== 'string') {
