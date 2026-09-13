@@ -8,6 +8,13 @@
  * FIR case references, and geographic police hub coordinates.
  */
 
+import { SYNDICATE_BAMBIHA, ENTITIES_BAMBIHA, LINKS_BAMBIHA } from './syndicateBambiha.js';
+import { SYNDICATE_TRANS_YAMUNA, ENTITIES_TRANS_YAMUNA, LINKS_TRANS_YAMUNA } from './syndicateTransYamuna.js';
+import { SYNDICATE_MEWAT_DEEG, ENTITIES_MEWAT_DEEG, LINKS_MEWAT_DEEG } from './syndicateMewatDetailed.js';
+import { SYNDICATE_PUNJAB_DRONE, ENTITIES_PUNJAB_DRONE, LINKS_PUNJAB_DRONE } from './syndicatePunjabDrone.js';
+import { SYNDICATE_COASTAL, ENTITIES_COASTAL, LINKS_COASTAL } from './syndicateCoastal.js';
+import { SYNDICATE_VEHICLE_FICN, ENTITIES_VEHICLE_FICN, LINKS_VEHICLE_FICN } from './syndicateVehicleFICN.js';
+
 export const CANONICAL_SYNDICATES = [
   {
     id: "syn_telgi",
@@ -73,7 +80,13 @@ export const CANONICAL_SYNDICATES = [
     firsCount: 39,
     activeOperatives: 9,
     estimatedHawala: "₹490 Cr"
-  }
+  },
+  SYNDICATE_BAMBIHA,
+  SYNDICATE_TRANS_YAMUNA,
+  SYNDICATE_MEWAT_DEEG,
+  SYNDICATE_PUNJAB_DRONE,
+  SYNDICATE_COASTAL,
+  SYNDICATE_VEHICLE_FICN
 ];
 
 export const CANONICAL_ENTITIES = {
@@ -550,7 +563,13 @@ export const CANONICAL_ENTITIES = {
       agencies: ["Punjab Police Special Task Force"],
       notes: "Picks up geotagged payload drops in agricultural fields; transports contraband to transit caches."
     }
-  ]
+  ],
+  syn_bambiha: ENTITIES_BAMBIHA,
+  syn_trans_yamuna: ENTITIES_TRANS_YAMUNA,
+  syn_mewat_deeg: ENTITIES_MEWAT_DEEG,
+  syn_punjab_drone: ENTITIES_PUNJAB_DRONE,
+  syn_coastal: ENTITIES_COASTAL,
+  syn_vehicle_ficn: ENTITIES_VEHICLE_FICN
 };
 
 export const CANONICAL_LINKS = {
@@ -582,5 +601,11 @@ export const CANONICAL_LINKS = {
   ],
   syn_punjab: [
     { source: "person_gopi", target: "person_harpreet", relationship: "Geotag Drop Recovery", weight: 0.94 }
-  ]
+  ],
+  syn_bambiha: LINKS_BAMBIHA,
+  syn_trans_yamuna: LINKS_TRANS_YAMUNA,
+  syn_mewat_deeg: LINKS_MEWAT_DEEG,
+  syn_punjab_drone: LINKS_PUNJAB_DRONE,
+  syn_coastal: LINKS_COASTAL,
+  syn_vehicle_ficn: LINKS_VEHICLE_FICN
 };
