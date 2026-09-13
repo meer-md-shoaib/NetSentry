@@ -4,7 +4,7 @@
   "description": "Autonomous Criminal Network & Cross-Jurisdiction Intelligence Platform (SIH 2026)",
   "type": "module",
   "scripts": {
-    "test": "node tests/test_intelligence.js",
+    "test": "node tests/test_intelligence.js && node tests/test_fiu_cdr.js",
     "start": "python -m http.server 8090"
   },
   "keywords": [
