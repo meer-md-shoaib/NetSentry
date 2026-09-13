@@ -968,3 +968,45 @@ html, body {
   font-size: 11px;
   color: var(--gray);
 }
+
+/* ── PRINT MEDIA QUERIES (SECTION 65B COURT CERTIFICATE) ── */
+@media print {
+  body, html {
+    background: #FFFFFF !important;
+    color: #000000 !important;
+    overflow: visible !important;
+    height: auto !important;
+  }
+
+  #top-command-bar,
+  #main-viewport,
+  #hitl-adjudication-dock,
+  .modal-dialog-header,
+  .modal-dialog-footer,
+  .viewport-floating-controls,
+  .viewport-floating-legend,
+  #modal-ml {
+    display: none !important;
+  }
+
+  .modal-overlay {
+    position: static !important;
+    background: none !important;
+    padding: 0 !important;
+    backdrop-filter: none !important;
+  }
+
+  .modal-dialog {
+    border: none !important;
+    box-shadow: none !important;
+    max-width: 100% !important;
+    max-height: none !important;
+  }
+
+  .court-certificate-page {
+    border: 2px solid #000000 !important;
+    padding: 40px !important;
+    margin: 0 !important;
+    page-break-inside: avoid;
+  }
+}
