@@ -57,6 +57,14 @@
         </button>
       </nav>
 
+      <!-- Threat Level Filter Chips -->
+      <div class="threat-filter-group" aria-label="Threat Level Filter">
+        <button id="filter-threat-all" class="filter-chip active" data-threat="ALL">ALL</button>
+        <button id="filter-threat-critical" class="filter-chip chip-critical" data-threat="critical">RED</button>
+        <button id="filter-threat-high" class="filter-chip chip-high" data-threat="high">ORANGE</button>
+        <button id="filter-threat-medium" class="filter-chip chip-medium" data-threat="medium">YELLOW</button>
+      </div>
+
       <!-- Topbar Action Utilities -->
       <div class="topbar-actions">
         <button id="btn-open-ingest" class="btn-command btn-command-secondary" title="Ingest Custom CSV or Police FIR Narrative">

@@ -256,6 +256,56 @@ html, body {
   box-shadow: var(--shadow-xs);
 }
 
+/* ── THREAT LEVEL FILTER CHIPS ── */
+.threat-filter-group {
+  display: flex;
+  background: var(--surface-alt);
+  border: 1px solid var(--border);
+  border-radius: 10px;
+  padding: 3px;
+  gap: 2px;
+}
+
+.filter-chip {
+  background: transparent;
+  border: 1px solid transparent;
+  padding: 5px 10px;
+  border-radius: 7px;
+  font-size: 11px;
+  font-weight: 700;
+  color: var(--gray);
+  cursor: pointer;
+  transition: var(--transition);
+}
+
+.filter-chip:hover {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+.filter-chip.active {
+  background: #FFFFFF;
+  box-shadow: var(--shadow-xs);
+  color: var(--navy);
+}
+
+.filter-chip.chip-critical.active {
+  background: #FEE2E2;
+  color: #B91C1C;
+  border: 1px solid #F87171;
+}
+
+.filter-chip.chip-high.active {
+  background: #FFEDD5;
+  color: #C2410C;
+  border: 1px solid #FB923C;
+}
+
+.filter-chip.chip-medium.active {
+  background: #FEF3C7;
+  color: #B45309;
+  border: 1px solid #FBBF24;
+}
+
 /* ── ACTION BUTTONS IN TOPBAR ── */
 .topbar-actions {
   display: flex;

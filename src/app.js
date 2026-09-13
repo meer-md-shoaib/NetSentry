@@ -35,6 +35,7 @@ class NetSentryController {
   constructor() {
     this.activeSyndicateId = 'syn_telgi';
     this.activeView = '2d'; // '2d' | '3d' | 'map'
+    this.activeThreatFilter = 'ALL'; // 'ALL' | 'critical' | 'high' | 'medium'
     this.selectedNodeId = null;
     this.neutralizedNodeId = null;
 
@@ -114,8 +115,18 @@ class NetSentryController {
     const alertCard = document.getElementById('tactical-alert-card');
     if (alertCard) alertCard.style.display = 'none';
 
-    const entities = CANONICAL_ENTITIES[syndicateId] || [];
-    const links = CANONICAL_LINKS[syndicateId] || [];
+    let entities = CANONICAL_ENTITIES[syndicateId] || [];
+    let links = CANONICAL_LINKS[syndicateId] || [];
+
+    // Filter by active threat tier if selected
+    if (this.activeThreatFilter && this.activeThreatFilter !== 'ALL') {
+      const filteredEntities = entities.filter(
+        (e) => (e.risk_tier || '').toLowerCase() === this.activeThreatFilter.toLowerCase() || e.orbit_level === 0
+      );
+      const allowedIds = new Set(filteredEntities.map((e) => e.id));
+      entities = filteredEntities;
+      links = links.filter((l) => allowedIds.has(l.source?.id || l.source) && allowedIds.has(l.target?.id || l.target));
+    }
 
     // Update Engines
     if (this.engine2D) this.engine2D.setData(entities, links);
@@ -151,6 +162,18 @@ class NetSentryController {
     btnMap?.addEventListener('click', () => {
       tacticalAudio.playViewSwitch();
       this.switchView('map');
+    });
+
+    // Threat Level Filter Chips
+    const chips = document.querySelectorAll('.filter-chip');
+    chips.forEach((chip) => {
+      chip.addEventListener('click', (e) => {
+        chips.forEach((c) => c.classList.remove('active'));
+        e.currentTarget.classList.add('active');
+        this.activeThreatFilter = e.currentTarget.getAttribute('data-threat');
+        tacticalAudio.playAction();
+        this.loadSyndicate(this.activeSyndicateId);
+      });
     });
 
     // Floating Camera / View Controls
