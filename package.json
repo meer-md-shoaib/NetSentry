@@ -1,0 +1,24 @@
+{
+  "name": "netsentry",
+  "version": "9.0.0",
+  "description": "Autonomous Criminal Network & Cross-Jurisdiction Intelligence Platform (SIH 2026)",
+  "type": "module",
+  "scripts": {
+    "test": "node tests/test_intelligence.js",
+    "start": "python -m http.server 8090"
+  },
+  "keywords": [
+    "sih2026",
+    "law-enforcement",
+    "ncrb",
+    "criminal-network-analysis",
+    "betweenness-centrality",
+    "indic-alias-resolution",
+    "section-65b"
+  ],
+  "authors": [
+    "Meer Mohammed Shoaib <meermohammedshoaib@gmail.com>",
+    "Allan Maaz"
+  ],
+  "license": "Proprietary"
+}
