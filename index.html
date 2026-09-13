@@ -1,436 +1,354 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>NetSentry — Criminal Network Intelligence Platform</title>
-  <meta name="description" content="Explore criminal syndicates, alias resolution (USP 1), and cross-jurisdiction intelligence (USP 2) in an interactive 3D graph visualization.">
-  <link rel="stylesheet" href="styles.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NetSentry — Sovereign Criminal Network Intelligence Platform (SIH 2026)</title>
+  <meta name="description" content="AI-powered sovereign law enforcement criminal network intelligence engine for inter-state syndicate bottleneck unmasking, Indic alias resolution, and court-admissible Section 65B dossier generation." />
+  <link rel="stylesheet" href="styles.css" />
+  <!-- Three.js for 3D Universe View -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <!-- OrbitControls for Three.js navigation -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 </head>
-<body class="universe-body">
-  <!-- Fullscreen 3D WebGL Canvas Container -->
-  <div id="webgl-universe-container" class="universe-fullscreen-container">
-    <!-- Interactive Floating Tooltip -->
-    <div id="universe-3d-tooltip" class="universe-tooltip"></div>
-  </div>
-
-  <!-- Minimal Floating Navigation Bar -->
-  <header class="floating-nav-bar">
-    <div class="nav-left">
-      <div class="nav-brand">
-        <span class="nav-brand-icon">🕸️</span>
-        <span class="nav-brand-title">NetSentry</span>
-        <span class="nav-brand-badge" style="margin-left: 6px; font-size: 10px; background: rgba(56, 189, 248, 0.15); border: 1px solid rgba(56, 189, 248, 0.35); padding: 2px 7px; border-radius: 999px; color: var(--color-aurora-cyan); font-weight: 600; letter-spacing: 0.5px;">SIH 2026</span>
+<body>
+  <div id="app-container">
+    <!-- Top Command Navigation Bar -->
+    <header id="top-command-bar">
+      <div class="brand-section">
+        <div class="brand-logo">
+          <div class="brand-icon-shield">
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+            </svg>
+          </div>
+          <span>NetSentry</span>
+        </div>
+        <span class="badge-sih-sovereign">SIH 2026 • NCRB</span>
       </div>
-      <nav id="universe-breadcrumb" class="nav-breadcrumbs" aria-label="Network Exploration Depth">
-        <button class="crumb-btn active" data-level="1">Network Overview</button>
+
+      <!-- Syndicate Switcher Dropdown -->
+      <div class="syndicate-select-wrapper">
+        <select id="syndicate-selector" class="syndicate-dropdown" title="Select Target Criminal Syndicate">
+          <!-- Populated dynamically via JS -->
+        </select>
+        <span class="dropdown-arrow">▼</span>
+      </div>
+
+      <!-- Multilingual Global Search Input -->
+      <div class="search-container">
+        <svg class="search-icon-lens" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+          <circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/>
+        </svg>
+        <input type="text" id="global-search-input" class="search-input" placeholder="Search suspect, alias (अस्लम), MSISDN tap (+91), or plate (MH-12)..." autocomplete="off" />
+        <div id="search-autocomplete-popup" class="search-results-popup" style="display: none;"></div>
+      </div>
+
+      <!-- View Mode Switcher: 2D Celestial Solar System vs 3D Universe vs India Map -->
+      <nav class="view-mode-toggle" aria-label="Network Visualization Mode">
+        <button id="btn-view-2d" class="view-toggle-btn active" data-view="2d" title="Concentric Celestial Solar System View">
+          <span>🪐</span> 2D Celestial
+        </button>
+        <button id="btn-view-3d" class="view-toggle-btn" data-view="3d" title="3D WebGL Galaxy Network View">
+          <span>🌌</span> 3D Galaxy
+        </button>
+        <button id="btn-view-map" class="view-toggle-btn" data-view="map" title="India Interstate Police Corridor Map">
+          <span>🗺️</span> India Map
+        </button>
       </nav>
-    </div>
 
-    <!-- Center Search Bar with Instant Camera Navigation -->
-    <div class="nav-center">
-      <div class="search-wrapper">
-        <svg class="search-icon" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-        <input type="text" id="universe-search-input" class="universe-search-input" placeholder="Search criminal, alias, syndicate, FIR #, or jurisdiction..." autocomplete="off">
-        <button id="btn-clear-search" class="btn-clear-search" style="display: none;">✕</button>
-
-        <!-- Search Autocomplete Dropdown Popover -->
-        <div id="search-results-popup" class="search-results-popup" style="display: none;"></div>
-      </div>
-    </div>
-
-    <div class="nav-right">
-      <!-- Dataset & Metadata Status Trigger -->
-      <button id="btn-status-trigger" class="btn-ghost-sm" title="Intelligence Pipeline & Network Statistics">
-        <span class="status-pulse-dot" id="status-pulse-dot"></span>
-        Status
-      </button>
-
-      <!-- Multi-Faceted Filters Trigger -->
-      <div class="dropdown-wrapper">
-        <button id="btn-filter-trigger" class="btn-ghost-sm" title="Filter by Crime Category, Agency, or Threat Level">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
-          Filters <span id="filter-active-count" class="filter-count-badge" style="display: none;">0</span>
+      <!-- Topbar Action Utilities -->
+      <div class="topbar-actions">
+        <button id="btn-open-ml" class="btn-command btn-command-secondary" title="View AI / Random Forest Model Metrics & Live Playground">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
+          ML Metrics
         </button>
-        <!-- Floating Filter Popover -->
-        <div id="filter-popover" class="filter-popover">
-          <div class="filter-popover-header">
-            <span>Filter Crime Network</span>
-            <button id="btn-reset-filters" class="btn-text-sm">Reset</button>
-          </div>
-          <div class="filter-popover-body">
-            <div class="filter-group">
-              <label class="filter-label">Crime Category</label>
-              <select id="filter-genre-select" class="filter-select">
-                <option value="ALL">All Crime Categories</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <label class="filter-label">Investigating Agency</label>
-              <select id="filter-playlist-select" class="filter-select">
-                <option value="ALL">All Agencies / Jurisdictions</option>
-              </select>
-            </div>
-            <div class="filter-group">
-              <div class="filter-label-row">
-                <label class="filter-label">Activity Timeline</label>
-                <span id="timeline-range-label" class="filter-val-badge">All Periods</span>
-              </div>
-              <div class="timeline-sliders-wrap">
-                <input type="range" id="timeline-slider-min" class="timeline-range" min="2020" max="2026" value="2020">
-                <input type="range" id="timeline-slider-max" class="timeline-range" min="2020" max="2026" value="2026">
-              </div>
-            </div>
-
-            <div class="filter-group">
-              <label class="filter-label">Entity Hierarchy Visibility</label>
-              <div class="filter-entity-row">
-                <label class="filter-check-label"><input type="checkbox" id="filter-type-artists" checked> Syndicates</label>
-                <label class="filter-check-label"><input type="checkbox" id="filter-type-albums" checked> Cells</label>
-                <label class="filter-check-label"><input type="checkbox" id="filter-type-songs" checked> Suspects</label>
-              </div>
-            </div>
-
-            <div class="filter-group">
-              <label class="filter-label">Intelligence Filaments</label>
-              <div class="filter-entity-row">
-                <label class="filter-check-label"><input type="checkbox" id="filter-connections-toggle" checked> Show Intelligence Links</label>
-              </div>
-            </div>
-
-            <!-- Dynamic Result Count Summary -->
-            <div id="filter-results-summary" class="filter-results-summary">
-              <span class="results-title">Showing</span>
-              <div class="results-stats">
-                <span id="filter-count-songs">0 suspects</span> • 
-                <span id="filter-count-artists">0 syndicates</span> • 
-                <span id="filter-count-albums">0 cells</span>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Crime Ring Scenarios Dropdown -->
-      <div class="dropdown-wrapper">
-        <button id="btn-sample-dropdown" class="btn-ghost-sm" title="Focus specific crime syndicates">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5"/></svg>
-          Syndicates ▾
-        </button>
-        <div id="sample-dropdown-menu" class="dropdown-menu">
-          <button class="dropdown-item" id="btn-load-realworld-d">
-            <span class="dropdown-item-title" style="color: var(--color-aurora-cyan); font-weight: 700;">★ Full Interstate Syndicate Network</span>
-            <span class="dropdown-item-sub">All 5 Syndicates, 54 Suspects & Multi-Agency Bridges</span>
-          </button>
-          <button class="dropdown-item" id="btn-load-electronic">
-            <span class="dropdown-item-title" style="color: #38bdf8;">D-West Cartel (Narcotics & Hawala)</span>
-            <span class="dropdown-item-sub">Mohd. Aslam, Tariq Merchant, Nhava Sheva Docks</span>
-          </button>
-          <button class="dropdown-item" id="btn-load-indie">
-            <span class="dropdown-item-title" style="color: #f43f5e;">NCR Arms & Extortion Ring</span>
-            <span class="dropdown-item-sub">Vikram Rathore, Kuldeep Tyagi, Meerut Foundry</span>
-          </button>
-          <button class="dropdown-item" id="btn-load-synthetic309">
-            <span class="dropdown-item-title" style="color: #a855f7;">Cyber Nexus & Crypto Laundering</span>
-            <span class="dropdown-item-sub">David Chen, Rohit Verma, Jamtara Mules</span>
-          </button>
-        </div>
-      </div>
-
-      <!-- Reset / Reload Network Trigger -->
-      <button id="btn-clear-library-trigger" class="btn-ghost-sm" title="Reset View & Refocus Universe">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-        Reset
-      </button>
-
-      <!-- Optional Custom Import Trigger (Kept for external files if desired) -->
-      <button id="btn-upload-trigger" class="btn-ghost-sm" title="Import External Dataset" style="display: none;">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-        Import
-      </button>
-    </div>
-  </header>
-
-  <!-- Minimal Floating HUD Camera & Product Controls (Bottom-Right) -->
-  <div class="floating-camera-controls">
-    <!-- 2D / 3D Celestial Projection Toggle -->
-    <button id="btn-toggle-2d" class="hud-circle-btn hud-toggle-btn" title="Toggle 2D Network Chart / 3D Graph" aria-label="Toggle 2D/3D">
-      <span id="toggle-2d-text" style="font-size: 11px; font-weight: 700;">2D</span>
-    </button>
-    <!-- Filaments Visibility Toggle -->
-    <button id="btn-toggle-filaments" class="hud-circle-btn hud-toggle-btn active" title="Toggle Connection Filaments" aria-label="Toggle Filaments">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="2" y1="12" x2="22" y2="12"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="12" r="3"/></svg>
-    </button>
-    <button id="btn-3d-zoom-in" class="hud-circle-btn" title="Zoom In (+)" aria-label="Zoom In">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    </button>
-    <button id="btn-3d-zoom-out" class="hud-circle-btn" title="Zoom Out (-)" aria-label="Zoom Out">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><line x1="5" y1="12" x2="19" y2="12"/></svg>
-    </button>
-    <button id="btn-3d-reset" class="hud-circle-btn" title="Reset View to Network Overview (0)" aria-label="Reset View">
-      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="1 4 1 10 7 10"/><path d="M3.51 15a9 9 0 1 0 2.13-9.36L1 10"/></svg>
-    </button>
-  </div>
-
-  <!-- Bottom Navigation Guide Hint -->
-  <div class="floating-gesture-hint">
-    <span>Drag: Orbit</span> • <span>Right Drag: Pan</span> • <span>Scroll: Zoom</span> • <span>Click: Inspect</span> • <span>Dbl-Click: Dive In</span>
-  </div>
-
-  <!-- Slide-Over Detail Inspector Drawer (Opens only when an object is clicked) -->
-  <aside id="detail-inspector" class="detail-inspector">
-    <div class="inspector-header">
-      <span class="inspector-category" id="inspector-category">Suspect Intelligence Dossier</span>
-      <button id="btn-close-inspector" class="btn-close-inspector" title="Close">✕</button>
-    </div>
-
-    <div class="inspector-body">
-      <!-- Media artwork & Title -->
-      <div class="inspector-hero">
-        <img id="inspector-artwork" class="inspector-artwork" src="" alt="Suspect Dossier">
-        <div class="inspector-hero-meta">
-          <h2 id="inspector-title" class="inspector-title">Suspect Name</h2>
-          <div id="inspector-subtitle" class="inspector-subtitle">Crime Syndicate</div>
-          <div id="inspector-galaxy-badge" class="inspector-galaxy-badge">Threat Level</div>
-        </div>
-      </div>
-
-
-      <!-- Quick Metadata Grid -->
-      <div class="inspector-meta-grid">
-        <div class="meta-item">
-          <span class="meta-label">Operational Cell</span>
-          <span class="meta-val" id="inspector-album">-</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Crime Classification</span>
-          <span class="meta-val" id="inspector-genre">-</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Primary Agency</span>
-          <span class="meta-val" id="inspector-playlists">-</span>
-        </div>
-        <div class="meta-item">
-          <span class="meta-label">Graph Coordinates</span>
-          <span class="meta-val font-mono" id="inspector-coords">[0, 0, 0]</span>
-        </div>
-        <div class="meta-item" style="grid-column: span 2;">
-          <span class="meta-label">Alias & Identity Status (USP 1)</span>
-          <span class="meta-val" id="inspector-enrichment-status">-</span>
-        </div>
-      </div>
-
-      <!-- External Metadata Verification Section -> Identity & Alias Resolution (USP 1 & 2) -->
-      <div id="inspector-enrichment-details" class="inspector-section" style="display: none; margin-top: 10px;">
-        <h3 class="inspector-section-title">Identity Resolution & Hard Identifiers</h3>
-        <div class="inspector-meta-grid" style="margin-top: 6px;">
-          <div class="meta-item">
-            <span class="meta-label">Resolution Engine</span>
-            <span class="meta-val" id="inspector-mb-provider">NetSentry Multi-Signal</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Match Confidence</span>
-            <span class="meta-val" id="inspector-mb-confidence">-</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Primary FIR Case</span>
-            <span class="meta-val" id="inspector-mb-date">-</span>
-          </div>
-          <div class="meta-item">
-            <span class="meta-label">Resolved Entity</span>
-            <span class="meta-val" id="inspector-mb-canonical">-</span>
-          </div>
-          <div class="meta-item" style="grid-column: span 2;">
-            <span class="meta-label">Corroborating Identifiers & Case Links</span>
-            <div class="meta-val font-mono" id="inspector-mb-ids" style="font-size: 11px; line-height: 1.6; margin-top: 2px;">-</div>
-          </div>
-        </div>
-      </div>
-
-      <!-- Connected Local Relationships -->
-      <div class="inspector-section">
-        <h3 class="inspector-section-title">Strongest Connected Criminal Associates</h3>
-        <div id="inspector-relationships-list" class="inspector-rel-list">
-          <!-- Populated dynamically -->
-        </div>
-      </div>
-
-      <!-- Related Artists -> Affiliated Crime Factions -->
-      <div class="inspector-section">
-        <h3 class="inspector-section-title">Linked Syndicates & Factions</h3>
-        <div id="inspector-artists-list" class="inspector-rel-list">
-          <!-- Populated dynamically -->
-        </div>
-      </div>
-    </div>
-
-    <div class="inspector-footer">
-      <button id="btn-inspector-flyto" class="btn-inspector-action">
-        <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 14 14"/></svg>
-        Focus Suspect In Network Graph
-      </button>
-    </div>
-  </aside>
-
-  <!-- Hidden File Input for Import -->
-  <input type="file" id="file-input" accept=".csv,.json,.xml,text/csv,application/json,text/xml" style="display: none;">
-
-  <!-- Comprehensive NetSentry Import Modal -->
-  <div id="upload-modal-backdrop" class="modal-backdrop">
-    <div class="modal-card modal-card-md">
-      <div class="modal-header">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span style="font-size: 16px; color: var(--color-aurora-cyan);">🕸️</span>
-          <h3 class="modal-title">Import Intelligence Dataset</h3>
-        </div>
-        <button id="btn-close-upload-modal" class="btn-ghost-sm">✕</button>
-      </div>
-
-      <!-- Import Navigation Tabs -->
-      <div class="import-modal-tabs">
-        <button class="import-tab-btn active" id="tab-import-files" data-tab="files">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
-          Files (CSV / JSON)
-        </button>
-        <button class="import-tab-btn" id="tab-import-paste" data-tab="paste">
-          <svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M16 4h2a2 2 0 0 1 2 2v14a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V6a2 2 0 0 1 2-2h2"/><rect x="8" y="2" width="8" height="4" rx="1" ry="1"/></svg>
-          Quick Dossier Manifest
+        <button id="btn-open-dossier-top" class="btn-command btn-command-primary" title="Export Section 65B Court Evidence Certificate">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+          Section 65B
         </button>
       </div>
+    </header>
 
-      <div class="import-tab-contents">
-        <!-- 1. Files Tab Content (CSV / JSON) -->
-        <div class="import-tab-pane active" id="pane-import-files">
-          <div id="dropzone" class="modal-dropzone" tabindex="0">
-            <div class="dropzone-icon">
-              <svg width="28" height="28" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+    <!-- Main Viewport Workspace -->
+    <main id="main-viewport">
+      <div class="viewport-stage">
+        <!-- 2D Celestial Solar System Canvas -->
+        <div id="canvas-2d-container">
+          <canvas id="solar-canvas-2d"></canvas>
+        </div>
+
+        <!-- 3D WebGL Universe Canvas -->
+        <div id="universe-3d-container" style="display: none;">
+          <!-- Three.js will attach here -->
+        </div>
+
+        <!-- India Interstate Geographic Corridor Map -->
+        <div id="map-geo-container" style="display: none;">
+          <svg id="india-map-svg" width="100%" height="100%"></svg>
+        </div>
+
+        <!-- Tactical Successor Alert Card -->
+        <div id="tactical-alert-card" class="tactical-alert-card" style="display: none;">
+          <span class="tactical-alert-badge">TACTICAL ALERT</span>
+          <div class="tactical-alert-info" id="tactical-alert-text">
+            Arrest simulated: Network capacity dropped by <strong>-74.2%</strong>.
+          </div>
+          <button id="btn-reset-arrest" class="btn-reset-sim">Reset Simulation</button>
+        </div>
+
+        <!-- Floating Graph Legend -->
+        <div class="viewport-floating-legend">
+          <div class="legend-title">Topology Key</div>
+          <div class="legend-item">
+            <span class="legend-dot sun"></span>
+            <span>Orbit 0: Syndicate Kingpin (Sun)</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot lieutenant"></span>
+            <span>Orbit I: Command Lieutenant</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot operative"></span>
+            <span>Orbit II: Ground Operative</span>
+          </div>
+          <div class="legend-item">
+            <span class="legend-dot transit"></span>
+            <span>Transit: Vehicle / Tap Node</span>
+          </div>
+        </div>
+
+        <!-- Floating Zoom / Center Controls -->
+        <div class="viewport-floating-controls">
+          <button id="btn-zoom-in" class="btn-ctrl-square" title="Zoom In">+</button>
+          <button id="btn-zoom-out" class="btn-ctrl-square" title="Zoom Out">−</button>
+          <button id="btn-center-kingpin" class="btn-ctrl-square" title="Focus Kingpin (Orbit 0)">🎯</button>
+          <button id="btn-reset-view" class="btn-ctrl-square" title="Reset View Bounds">↺</button>
+        </div>
+      </div>
+
+      <!-- Right Inspector Dossier Drawer -->
+      <aside id="inspector-drawer">
+        <div class="inspector-header">
+          <div class="entity-serial-code" id="drawer-entity-id">REC-MHA-001</div>
+          <h2 class="entity-canonical-name" id="drawer-entity-name">Abdul Karim Telgi</h2>
+          <span class="entity-role-badge" id="drawer-entity-role">Syndicate Kingpin</span>
+        </div>
+
+        <div class="inspector-body">
+          <!-- Metrics Grid -->
+          <div class="metrics-row">
+            <div class="metric-card">
+              <div class="metric-label">Risk Threat Score</div>
+              <div class="metric-value-box">
+                <span class="metric-value-num" id="drawer-risk-score">98</span>
+                <span class="risk-indicator-pill risk-critical" id="drawer-risk-badge">CRITICAL</span>
+              </div>
             </div>
-            <p style="font-weight: 600; color: #ffffff; font-size: 13px;">Drop CSV or JSON intelligence file here</p>
-            <p style="font-size: 12px; color: var(--color-muted); margin-top: 4px;">Supports CCTNS FIR logs, multi-agency CDR call sheets, and syndicate registries</p>
+            <div class="metric-card">
+              <div class="metric-label">Betweenness Rank</div>
+              <div class="metric-value-box">
+                <span class="metric-value-num" id="drawer-betweenness-rank">#1</span>
+                <span style="font-size: 11px; color: var(--gray);">Bottleneck</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Tactical Arrest Impact Button -->
+          <button id="btn-simulate-arrest" class="btn-command btn-command-tactical" style="width: 100%; justify-content: center; padding: 10px;">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="4.93" y1="4.93" x2="19.07" y2="19.07"/></svg>
+            Simulate Arrest &amp; Network Fracture
+          </button>
+
+          <!-- Known Indic Aliases -->
+          <div>
+            <div class="detail-group-title">Phonetic &amp; Regional Aliases</div>
+            <div class="tags-cloud" id="drawer-aliases-container">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Intercepted Telecom Taps -->
+          <div>
+            <div class="detail-group-title">Intercepted MSISDN Lines</div>
+            <div class="tags-cloud" id="drawer-phones-container">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Tracked Vehicle Registrations -->
+          <div>
+            <div class="detail-group-title">Transit Vehicle Fleet</div>
+            <div class="tags-cloud" id="drawer-vehicles-container">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Registered FIRs & Agencies -->
+          <div>
+            <div class="detail-group-title">Cross-State Police FIRs &amp; Chargesheets</div>
+            <div id="drawer-firs-container">
+              <!-- Populated dynamically -->
+            </div>
+          </div>
+
+          <!-- Intelligence Narrative -->
+          <div>
+            <div class="detail-group-title">Law Enforcement Intelligence Summary</div>
+            <div class="intelligence-narrative" id="drawer-notes-text">
+              Mastermind orchestrating nationwide counterfeit stamp paper syndicate...
+            </div>
+          </div>
+
+          <!-- Full Court Dossier Action -->
+          <button id="btn-view-dossier" class="btn-command btn-command-primary" style="width: 100%; justify-content: center; padding: 10px;">
+            Generate Section 65B Evidence Certificate
+          </button>
+        </div>
+      </aside>
+    </main>
+
+    <!-- Bottom Human-In-The-Loop (HITL) Adjudication Dock -->
+    <footer id="hitl-adjudication-dock">
+      <div class="hitl-dock-info">
+        <span class="hitl-pulse-orb"></span>
+        <span style="font-size: 11px; font-weight: 700; color: var(--navy-muted); text-transform: uppercase; letter-spacing: 0.5px;">HITL Queue:</span>
+        <div class="hitl-candidate-pair" id="hitl-candidate-text">
+          <span>Maharashtra Police (Telgi Seth)</span>
+          <span style="color: var(--gray);">⟷</span>
+          <span>Karnataka CID (Karim Lala)</span>
+        </div>
+        <span class="hitl-match-pill" id="hitl-confidence-pill">100% CORROBORATED MATCH</span>
+      </div>
+      <button id="btn-confirm-hitl-merge" class="btn-confirm-merge">
+        ✓ Confirm Cross-State Merge
+      </button>
+    </footer>
+
+    <!-- MODAL 1: Section 65B Electronic Court Evidence Dossier -->
+    <div id="modal-dossier" class="modal-overlay" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-dialog-header">
+          <div class="modal-title-wrap">
+            <h3>Court-Admissible Electronic Dossier</h3>
+            <p>Certified Under Section 65B, Indian Evidence Act (1 of 1872)</p>
+          </div>
+          <button class="btn-close-modal" data-close="modal-dossier">&times;</button>
+        </div>
+        <div class="modal-dialog-body">
+          <div class="court-certificate-page" id="court-certificate-content">
+            <div class="court-cert-header">
+              <h2>CENTRAL POLICE INTELLIGENCE COMMAND</h2>
+              <h4>CERTIFICATE UNDER SECTION 65B OF THE INDIAN EVIDENCE ACT</h4>
+              <p style="font-size: 10px; margin-top: 4px; font-family: var(--font-mono);">PRODUCED IN COMPLIANCE WITH HON'BLE SUPREME COURT MANDATE (ARJUN PANDITRAO v. KAILASH KUSHANRAO)</p>
+            </div>
+            <div class="court-cert-body">
+              <p>I hereby certify that the electronic record detailing the cross-jurisdictional syndicate profile of <strong id="cert-subject-name">ABDUL KARIM TELGI</strong> was produced by an autonomous, tamper-evident computational system (NetSentry Sovereign Engine) operating under standard law enforcement supervision.</p>
+              
+              <div class="hash-token-box">
+                <div>CRYPTOGRAPHIC EVIDENCE HASH (SHA-256):</div>
+                <div id="cert-sha256-hash">e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855</div>
+              </div>
+
+              <p style="margin-top: 10px;"><strong>Algorithmic Adjudication &amp; Phonetic Justification:</strong></p>
+              <p id="cert-phonetic-rationale" style="font-style: italic; color: #333; margin-top: 4px;">
+                Entity identified across state jurisdictions via Double Metaphone phonetic root alignment and corroborating vehicle registration plate match.
+              </p>
+
+              <div style="display: flex; justify-content: space-between; margin-top: 24px; padding-top: 16px; border-top: 1px solid #999;">
+                <div>
+                  <div style="font-size: 11px;">DIGITAL VERIFICATION QR:</div>
+                  <div style="width: 64px; height: 64px; background: #EEE; border: 1px solid #CCC; display: flex; align-items: center; justify-content: center; font-size: 9px; font-family: monospace;">[QR CODE]</div>
+                </div>
+                <div style="text-align: right; font-size: 11px;">
+                  <div>INVESTIGATING OFFICER: #IO-MH-8812</div>
+                  <div>TIMESTAMP: <span id="cert-timestamp">2026-09-13T20:00:00Z</span></div>
+                  <div>STATUS: COURT-ADMISSIBLE VERIFIED</div>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
+        <div class="modal-dialog-footer">
+          <button class="btn-command btn-command-secondary" data-close="modal-dossier">Close</button>
+          <button id="btn-print-certificate" class="btn-command btn-command-primary">
+            🖨️ Print / Save PDF Certificate
+          </button>
+        </div>
+      </div>
+    </div>
 
-        <!-- 2. Quick Paste Tab Content -->
-        <div class="import-tab-pane" id="pane-import-paste">
-          <div class="import-section-desc">
-            Paste suspect entries (one per line, e.g. <code>Suspect Name - Syndicate [Cell]</code>):
+    <!-- MODAL 2: Interactive AI / Random Forest Model Playground -->
+    <div id="modal-ml" class="modal-overlay" style="display: none;">
+      <div class="modal-dialog">
+        <div class="modal-dialog-header">
+          <div class="modal-title-wrap">
+            <h3>Machine Learning Model Evaluation &amp; Live Playground</h3>
+            <p>Supervised Random Forest Classifier Trained on 20,000 Indic Judicial Records</p>
           </div>
-          <textarea id="textarea-paste-tracks" class="import-textarea" rows="6" placeholder="Mohd. Aslam - D-West Cartel [Nhava Sheva Port Logistics]
-Vikram Rathore - NCR Arms Ring [Meerut Foundry]
-David Chen - Cyber Nexus [Crypto Mixers & Shell Routing]
-Haji Ismail - Coastal Contraband [Mandvi Mechanized Dhow Fleet]
-Tariq Merchant - D-West Cartel [Dubai Hawala Remittance Node]"></textarea>
-          <div style="display: flex; justify-content: space-between; align-items: center; margin-top: 8px;">
-            <button id="btn-paste-sample" class="btn-text-sm">Insert Sample Dossier</button>
-            <button id="btn-submit-paste" class="btn-primary-sm">Build Intelligence Graph</button>
+          <button class="btn-close-modal" data-close="modal-ml">&times;</button>
+        </div>
+        <div class="modal-dialog-body">
+          <!-- Model Benchmark Stats -->
+          <div class="metrics-row">
+            <div class="metric-card">
+              <div class="metric-label">ROC-AUC Score</div>
+              <div class="metric-value-box">
+                <span class="metric-value-num" style="color: var(--low);">99.99%</span>
+              </div>
+            </div>
+            <div class="metric-card">
+              <div class="metric-label">Model Accuracy</div>
+              <div class="metric-value-box">
+                <span class="metric-value-num" style="color: var(--sovereign-blue);">99.36%</span>
+              </div>
+            </div>
+          </div>
+
+          <!-- Live Indic Name Pair Testing Playground -->
+          <div style="background: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 16px;">
+            <div class="detail-group-title" style="margin-bottom: 12px;">Live Pair Matcher Playground (Test with Judges)</div>
+            <div class="ml-playground-grid">
+              <div class="ml-input-group">
+                <label>Entity A (Name / Dialect)</label>
+                <input type="text" id="ml-input-name-a" value="Mohd. Aslam" />
+              </div>
+              <div class="ml-input-group">
+                <label>Entity B (Indic Alias / Devanagari)</label>
+                <input type="text" id="ml-input-name-b" value="अस्लम भाई" />
+              </div>
+            </div>
+            <div class="ml-playground-grid" style="margin-top: 10px;">
+              <div class="ml-input-group">
+                <label>Corroborating Phone #</label>
+                <input type="text" id="ml-input-phone" value="+91-9820091100" />
+              </div>
+              <div class="ml-input-group">
+                <label>Corroborating Vehicle Plate</label>
+                <input type="text" id="ml-input-plate" value="MH-01-DX-9009" />
+              </div>
+            </div>
+            <button id="btn-run-live-inference" class="btn-command btn-command-primary" style="margin-top: 14px; width: 100%; justify-content: center;">
+              ⚡ Compute Random Forest Decision
+            </button>
+          </div>
+
+          <!-- Feature Contribution Breakdown -->
+          <div>
+            <div class="detail-group-title">Feature Weight Contribution</div>
+            <div id="ml-feature-bars-container">
+              <!-- Rendered dynamically -->
+            </div>
           </div>
         </div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Rich Floating Processing Panel -->
-  <div id="progress-panel" class="floating-progress-panel" style="display: none;">
-    <div class="proc-header">
-      <div class="proc-title-row">
-        <svg class="spinner" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M21 12a9 9 0 1 1-6.219-8.56"/></svg>
-        <span class="proc-main-title">Processing Pipeline</span>
-      </div>
-      <span id="proc-file-name" class="proc-file-name">Dataset</span>
-    </div>
-
-    <div class="proc-phases">
-      <!-- 1. DATA INGESTION -->
-      <div class="proc-phase-item" id="proc-step-import">
-        <div class="proc-step-header">
-          <span class="proc-step-name">DATA INGESTION</span>
-          <span class="proc-step-status" id="proc-import-status">Detecting suspect records...</span>
-        </div>
-        <div class="proc-step-detail" id="proc-import-detail">Validating schema & deduplicating FIR cases...</div>
-      </div>
-
-      <!-- 2. IDENTITY & ALIAS RESOLUTION -->
-      <div class="proc-phase-item" id="proc-step-enrichment">
-        <div class="proc-step-header">
-          <span class="proc-step-name">IDENTITY & ALIAS RESOLUTION (USP 1)</span>
-          <span class="proc-step-status" id="proc-enrichment-status">Pending</span>
-        </div>
-        <div class="proc-progress-bar-wrap" id="proc-enrichment-bar-wrap" style="display: none;">
-          <div class="proc-progress-bar" id="proc-enrichment-bar" style="width: 0%;"></div>
-        </div>
-        <div class="proc-counts-row" id="proc-enrichment-counts" style="display: none;">
-          <span class="count-matched"><strong id="proc-matched-num">0</strong> resolved</span> • 
-          <span class="count-partial"><strong id="proc-partial-num">0</strong> partial</span> • 
-          <span class="count-unmatched"><strong id="proc-unmatched-num">0</strong> unresolved</span>
-        </div>
-        <div class="proc-current-track" id="proc-enrichment-current" style="display: none;"></div>
-      </div>
-
-      <!-- 3. CROSS-JURISDICTION LINKING -->
-      <div class="proc-phase-item" id="proc-step-rel">
-        <div class="proc-step-header">
-          <span class="proc-step-name">CROSS-JURISDICTION LINKING (USP 2)</span>
-          <span class="proc-step-status" id="proc-rel-status">Pending</span>
-        </div>
-      </div>
-
-      <!-- 4. INTELLIGENCE GRAPH SYNTHESIS -->
-      <div class="proc-phase-item" id="proc-step-constellation">
-        <div class="proc-step-header">
-          <span class="proc-step-name">INTELLIGENCE GRAPH SYNTHESIS</span>
-          <span class="proc-step-status" id="proc-constellation-status">Pending</span>
+        <div class="modal-dialog-footer">
+          <button class="btn-command btn-command-secondary" data-close="modal-ml">Close</button>
         </div>
       </div>
     </div>
   </div>
 
-  <!-- Clear Confirmation Modal -->
-  <div id="clear-modal-backdrop" class="modal-backdrop">
-    <div class="modal-card modal-card-sm">
-      <div class="modal-header">
-        <h3 class="modal-title" style="color: #f87171;">Reset Network View?</h3>
-        <button id="clear-modal-cancel-x" class="btn-ghost-sm">✕</button>
-      </div>
-      <p style="font-size: 12px; color: #94a3b8; line-height: 1.5; margin: 12px 0 16px;">
-        This will reset the active filters, close inspector drawers, and return the camera to the full interstate intelligence network overview.
-      </p>
-      <div style="display: flex; justify-content: flex-end; gap: 8px;">
-        <button id="clear-modal-cancel-btn" class="btn-ghost-sm">Cancel</button>
-        <button id="clear-modal-confirm-btn" class="btn-danger-sm">Reset View</button>
-      </div>
-    </div>
-  </div>
-
-  <!-- Dataset & Metadata Status Modal -->
-  <div id="status-modal-backdrop" class="modal-backdrop">
-    <div class="modal-card modal-card-lg">
-      <div class="modal-header">
-        <div style="display: flex; align-items: center; gap: 8px;">
-          <span class="status-pulse-dot active"></span>
-          <h3 class="modal-title">NetSentry Intelligence Pipeline & Resolution Metrics</h3>
-        </div>
-        <button id="btn-close-status-modal" class="btn-ghost-sm">✕</button>
-      </div>
-
-      <!-- Tabs -->
-      <div class="status-modal-tabs">
-        <button class="status-tab-btn active" id="tab-btn-overview">Network & Centrality Overview</button>
-        <button class="status-tab-btn" id="tab-btn-log">Alias Resolution Log (USP 1) <span id="log-count-pill" class="badge-pill">0</span></button>
-      </div>
-
-      <div class="status-modal-body" id="status-modal-body">
-        <!-- Populated dynamically with honest calculated metadata and inspection log -->
-      </div>
-    </div>
-  </div>
-
-  <!-- Floating Connection Line Explanation Tooltip -->
-  <div id="connection-tooltip" class="connection-tooltip" style="display: none;"></div>
-
-  <!-- Toast Container -->
-  <div id="toast-container" class="toast-container"></div>
-
-  <!-- Application Logic -->
-  <script type="module" src="src/app.js?v=8.0.2"></script>
+  <!-- Primary Application Controller (ES Module) -->
+  <script type="module" src="src/app.js?v=9.0.0"></script>
 </body>
 </html>
