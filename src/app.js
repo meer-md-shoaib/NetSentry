@@ -26,6 +26,8 @@ import { simulateSuspectArrest } from './intelligence/tacticalSim.js';
 import { compileSection65BCertificate } from './intelligence/section65B.js';
 import { renderROCCurveSVG, renderConfusionMatrixHTML } from './intelligence/mlMetricsVisualizer.js';
 import { tacticalAudio } from './ui/tacticalAudio.js';
+import { parseCSVToEntities } from './parser/csvParser.js';
+import { extractEntitiesFromNarrative } from './intelligence/nlpParser.js';
 
 class NetSentryController {
   constructor() {
@@ -219,6 +221,9 @@ class NetSentryController {
 
     // Global Multilingual Search Input
     this.initGlobalSearch();
+
+    // Data Ingestion & FIR NLP Modal
+    this.initIngestModal();
   }
 
   switchView(mode) {
@@ -533,6 +538,239 @@ class NetSentryController {
       if (!input.contains(e.target) && !popup.contains(e.target)) {
         popup.style.display = 'none';
       }
+    });
+  }
+
+  initIngestModal() {
+    const btnOpen = document.getElementById('btn-open-ingest');
+    const modal = document.getElementById('modal-ingest');
+    if (!btnOpen || !modal) return;
+
+    btnOpen.addEventListener('click', () => {
+      modal.style.display = 'flex';
+    });
+
+    // Tab switcher
+    const tabBtnCsv = document.getElementById('tab-btn-csv');
+    const tabBtnFir = document.getElementById('tab-btn-fir');
+    const tabContentCsv = document.getElementById('tab-content-csv');
+    const tabContentFir = document.getElementById('tab-content-fir');
+
+    tabBtnCsv?.addEventListener('click', () => {
+      tabBtnCsv.className = 'btn-command btn-command-primary';
+      tabBtnFir.className = 'btn-command btn-command-secondary';
+      tabContentCsv.style.display = 'block';
+      tabContentFir.style.display = 'none';
+    });
+
+    tabBtnFir?.addEventListener('click', () => {
+      tabBtnFir.className = 'btn-command btn-command-primary';
+      tabBtnCsv.className = 'btn-command btn-command-secondary';
+      tabContentFir.style.display = 'block';
+      tabContentCsv.style.display = 'none';
+    });
+
+    // Sample CSV Buttons
+    const csvInput = document.getElementById('csv-input-text');
+    const synNameInput = document.getElementById('ingest-syndicate-name');
+
+    document.getElementById('btn-load-sample-mewat')?.addEventListener('click', () => {
+      if (synNameInput) synNameInput.value = 'Mewat Cyber Fraud Ring';
+      if (csvInput) {
+        csvInput.value = `id,name,alias,threat,role,jurisdiction,fir,notes
+MEW-01,Kasim Hacker,Kasim Cyber,CRITICAL,Mastermind,Haryana/Rajasthan,FIR 102/25,Coordinates 450 mule bank accounts and SIM farm
+MEW-02,Tariq Phisher,Tariq OTP,HIGH,Social Engineer,Mewat,FIR 103/25,Phishing APK distributor via WhatsApp
+MEW-03,Junaid Cashout,Junaid ATM,HIGH,Cashout Operator,Alwar,FIR 104/25,Operates ATM debit card withdrawals across Delhi-NCR
+MEW-04,Rashid SIM,Rashid Telecom,MEDIUM,SIM Card Supplier,Bharatpur,FIR 105/25,Procures pre-activated Assam/Bihar SIM cards
+MEW-05,Faizan Crypto,Faizan USDT,HIGH,Crypto Launderer,Gurugram,FIR 106/25,Converts fraud INR to USDT on P2P exchanges`;
+      }
+    });
+
+    document.getElementById('btn-load-sample-drone')?.addEventListener('click', () => {
+      if (synNameInput) synNameInput.value = 'Punjab Border Drone Cartel';
+      if (csvInput) {
+        csvInput.value = `id,name,alias,threat,role,jurisdiction,fir,notes
+DRN-01,Gurmukh Singh,Guri Majha,CRITICAL,Border Kingpin,Punjab/Pakistan,FIR 401/24,Coordinates cross-border drone sorties for heroin and pistols
+DRN-02,Jaspal Bawa,Bawa Amritsar,HIGH,Drop Receiver,Tarn Taran,FIR 402/24,Receives night payload coordinates via Signal app
+DRN-03,Harpreet Happy,Happy Shooter,HIGH,Armed Enforcer,Ferozepur,FIR 403/24,Provides armed transit and courier protection
+DRN-04,Maninder Goldy,Goldy Hawala,HIGH,Hawala Banker,Jalandhar,FIR 404/24,Channels drug proceeds to Dubai and Canada conduits
+DRN-05,Baljit Billa,Billa Driver,MEDIUM,Interstate Courier,Bathinda,FIR 405/24,Transports concealed consignments along NH-44`;
+      }
+    });
+
+    document.getElementById('btn-load-sample-kutch')?.addEventListener('click', () => {
+      if (synNameInput) synNameInput.value = 'Kutch Maritime Dhow Syndicate';
+      if (csvInput) {
+        csvInput.value = `id,name,alias,threat,role,jurisdiction,fir,notes
+KUT-01,Haji Usman,Usman Seth,CRITICAL,Dhow Syndicate Head,Gujarat/Kutch,FIR 55/25,Commands mid-sea transshipment vessels off Jakhau coast
+KUT-02,Ibrahim Noor,Noor Tandel,HIGH,Sea Captain,Mandvi,FIR 56/25,Navigates non-AIS motorized dhows across international waters
+KUT-03,Sikandar Patel,Sikandar Kalo,HIGH,Coastal Landings,Porbandar,FIR 57/25,Manages beach offloading and local hideout logistics
+KUT-04,Devji Bhai,Devji Angadia,HIGH,Angadia Courier,Ahmedabad,FIR 58/25,Channels physical currency notes through Angadia network
+KUT-05,Ramesh Koli,Ramesh Driver,MEDIUM,Truck Dispatcher,Gandhidham,FIR 59/25,Transports sealed containers to inland industrial hubs`;
+      }
+    });
+
+    // CSV Submit Handler
+    document.getElementById('btn-submit-csv')?.addEventListener('click', () => {
+      const text = csvInput?.value?.trim();
+      if (!text) {
+        alert('Please paste or select valid CSV data.');
+        return;
+      }
+
+      const parsedEntities = parseCSVToEntities(text);
+      if (parsedEntities.length === 0) {
+        alert('Failed to parse CSV records. Verify columns include at least name/accused.');
+        return;
+      }
+
+      const synId = `syn_custom_${Date.now().toString(36)}`;
+      const synName = synNameInput?.value?.trim() || 'Custom Police Field Ingest';
+
+      // Register Syndicate
+      CANONICAL_SYNDICATES.push({
+        id: synId,
+        name: synName,
+        threatLevel: 'CRITICAL',
+        hq: 'Central Police Command',
+        activeYears: '2024-2026',
+        primaryRacket: 'Trans-Jurisdictional Organized Crime',
+        estimatedRevenue: '₹750+ Crores',
+        color: '#E11D48'
+      });
+
+      // Register Entities
+      CANONICAL_ENTITIES[synId] = parsedEntities;
+
+      // Generate Links (Star-hub to Kingpin and sequential chain)
+      const kingpinId = parsedEntities[0].id;
+      const links = [];
+      for (let i = 1; i < parsedEntities.length; i++) {
+        links.push({
+          source: kingpinId,
+          target: parsedEntities[i].id,
+          type: 'DIRECT_COMMAND',
+          strength: 0.85
+        });
+        if (i > 1) {
+          links.push({
+            source: parsedEntities[i - 1].id,
+            target: parsedEntities[i].id,
+            type: 'LOGISTICAL_CONDUIT',
+            strength: 0.65
+          });
+        }
+      }
+      CANONICAL_LINKS[synId] = links;
+
+      // Add to selector
+      const selector = document.getElementById('syndicate-selector');
+      if (selector) {
+        const opt = document.createElement('option');
+        opt.value = synId;
+        opt.textContent = `${synName} (CUSTOM CRITICAL)`;
+        selector.appendChild(opt);
+        selector.value = synId;
+      }
+
+      this.loadSyndicate(synId);
+      tacticalAudio.playAction();
+      modal.style.display = 'none';
+      alert(`Successfully ingested ${parsedEntities.length} suspect entities into "${synName}".`);
+    });
+
+    // Sample FIR Buttons
+    const firInput = document.getElementById('fir-input-text');
+    document.getElementById('btn-load-sample-fir1')?.addEventListener('click', () => {
+      if (firInput) {
+        firInput.value = `FIR No. 402/2024 PS Majitha, Amritsar Rural. U/S 307, 120B IPC, Sec 21/25 NDPS Act, and Unlawful Activities Prevention Act (UAPA). Informant reported drone dropping contraband near village Dhianpur. Accused Gurmukh Singh alias Guri Majha operating from border coordinates coordinated with Jaspal Bawa urff Bawa Amritsar. Vehicle bearing registration PB-02-AX-4411 intercepted with 5kg heroin and 2 Glock pistols. Primary contact number +91-9876543210 recovered from burner handset. Foreign Hawala route routed through account 991200445588 Bank of Punjab.`;
+      }
+    });
+
+    document.getElementById('btn-load-sample-fir2')?.addEventListener('click', () => {
+      if (firInput) {
+        firInput.value = `FIR No. 118/2025 PS Cyber Crime Gurugram. U/S 419, 420 IPC and Section 66D Information Technology Act. Complainant defrauded of Rs 48,50,000 through malicious electricity bill APK. Key operative Kasim Hacker urff Kasim Cyber tracked operating in Deeg district near Rajasthan border. Vehicle utilized for cash withdrawal was white Scorpio HR-28-B-1122. Linked burner phone +91-9812345678 active near cell tower MEW-9912. Hawala money transferred to mule account 501004812345 HDFC Bank.`;
+      }
+    });
+
+    // Parse FIR Button
+    let extractedFIRData = null;
+    document.getElementById('btn-parse-fir')?.addEventListener('click', () => {
+      const text = firInput?.value?.trim();
+      if (!text) {
+        alert('Please enter or load FIR narrative text.');
+        return;
+      }
+
+      const res = extractEntitiesFromNarrative(text);
+      extractedFIRData = res;
+
+      const resultBox = document.getElementById('fir-nlp-results-box');
+      const listDiv = document.getElementById('fir-nlp-entities-list');
+      if (resultBox && listDiv) {
+        listDiv.innerHTML = `
+          <div><strong>Extracted Accused Aliases:</strong> ${res.aliases.length > 0 ? res.aliases.map(a => `<span class="tag-bubble tag-bubble-accent">${a}</span>`).join(' ') : 'None identified'}</div>
+          <div style="margin-top: 6px;"><strong>Intercepted Phone Numbers:</strong> ${res.phones.length > 0 ? res.phones.map(p => `<span class="tag-bubble mono-tag">📞 ${p}</span>`).join(' ') : 'None'}</div>
+          <div style="margin-top: 6px;"><strong>Transit Vehicles:</strong> ${res.vehicles.length > 0 ? res.vehicles.map(v => `<span class="tag-bubble mono-tag">🚗 ${v}</span>`).join(' ') : 'None'}</div>
+          <div style="margin-top: 6px;"><strong>Statutory Sections:</strong> ${res.legalSections.length > 0 ? res.legalSections.map(l => `<span class="tag-bubble" style="background:#FEE2E2; color:#B91C1C;">⚖️ ${l}</span>`).join(' ') : 'None'}</div>
+          <div style="margin-top: 6px;"><strong>Financial / Hawala Accounts:</strong> ${res.financialTokens.length > 0 ? res.financialTokens.map(f => `<span class="tag-bubble mono-tag">🏦 ${f}</span>`).join(' ') : 'None'}</div>
+        `;
+        resultBox.style.display = 'block';
+        tacticalAudio.playLockOn();
+      }
+    });
+
+    // Add Extracted FIR Entities to Graph
+    document.getElementById('btn-add-fir-to-graph')?.addEventListener('click', () => {
+      if (!extractedFIRData || extractedFIRData.aliases.length === 0) {
+        alert('No distinct suspect entities found in the parsed FIR to add to graph.');
+        return;
+      }
+
+      const entities = CANONICAL_ENTITIES[this.activeSyndicateId] || [];
+      const links = CANONICAL_LINKS[this.activeSyndicateId] || [];
+
+      extractedFIRData.aliases.forEach((aliasName, idx) => {
+        const newId = `nlp_ent_${Date.now()}_${idx}`;
+        const newEntity = {
+          id: newId,
+          canonical_name: aliasName,
+          aliases: [aliasName],
+          orbit_level: 2,
+          role: 'FIR Co-Conspirator',
+          risk_score: 85,
+          risk_tier: 'high',
+          betweenness: 0.45,
+          centrality_rank: entities.length + 1,
+          jurisdiction: 'FIR Jurisdiction',
+          city: 'Regional Hub',
+          lat: 28.6139,
+          lng: 77.2090,
+          phones: extractedFIRData.phones,
+          vehicles: extractedFIRData.vehicles,
+          firs: ['FIR Extracted Record 2026'],
+          agencies: ['State Special Cell'],
+          notes: `Identified via Sovereign FIR NLP extraction under ${extractedFIRData.legalSections.join(', ')}.`
+        };
+
+        entities.push(newEntity);
+
+        // Link to active kingpin
+        const kingpin = entities.find(e => e.orbit_level === 0) || entities[0];
+        if (kingpin) {
+          links.push({
+            source: kingpin.id,
+            target: newId,
+            type: 'FIR_CORROBORATED',
+            strength: 0.8
+          });
+        }
+      });
+
+      this.loadSyndicate(this.activeSyndicateId);
+      tacticalAudio.playAction();
+      modal.style.display = 'none';
+      alert(`Added ${extractedFIRData.aliases.length} suspects from FIR directly into active network graph!`);
     });
   }
 }
