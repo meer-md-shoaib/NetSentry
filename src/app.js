@@ -28,6 +28,8 @@ import { renderROCCurveSVG, renderConfusionMatrixHTML } from './intelligence/mlM
 import { tacticalAudio } from './ui/tacticalAudio.js';
 import { parseCSVToEntities } from './parser/csvParser.js';
 import { extractEntitiesFromNarrative } from './intelligence/nlpParser.js';
+import { analyzeFIUTransactions } from './intelligence/fiuAnalyzer.js';
+import { analyzeCDRLogs } from './intelligence/cdrAnalyzer.js';
 
 class NetSentryController {
   constructor() {
@@ -337,6 +339,66 @@ class NetSentryController {
         `;
         firsBox.appendChild(item);
       });
+    }
+
+    // Render FIU Hawala & AML Traces
+    const fiuBox = document.getElementById('drawer-fiu-container');
+    if (fiuBox) {
+      fiuBox.innerHTML = '';
+      const sampleTxns = [
+        { from_account: '991200445588', to_account: '501004812345', amount: 49500, timestamp: new Date().toISOString(), from_bank: 'HDFC Bank', to_bank: 'ICICI Bank' },
+        { from_account: '991200445588', to_account: '501004812345', amount: 48900, timestamp: new Date().toISOString(), from_bank: 'HDFC Bank', to_bank: 'ICICI Bank' },
+        { from_account: '501004812345', to_account: '882001199332', amount: 240000, timestamp: new Date().toISOString(), from_bank: 'ICICI Bank', to_bank: 'Axis Bank' }
+      ];
+      const fiuAnalysis = analyzeFIUTransactions(sampleTxns);
+      const isHighRisk = (entity.orbit_level === 0 || (entity.risk_score || 0) >= 80);
+
+      if (isHighRisk && fiuAnalysis.suspiciousReports.length > 0) {
+        fiuAnalysis.suspiciousReports.forEach((rpt) => {
+          const card = document.createElement('div');
+          card.className = 'fir-card-item';
+          card.style.borderLeft = '3px solid #E11D48';
+          card.innerHTML = `
+            <div style="font-size: 11px; font-weight: 700; color: #B91C1C;">⚠️ STR ALERT: ${rpt.type}</div>
+            <div style="font-size: 11px; margin-top: 2px; color: var(--navy);">${rpt.justification}</div>
+          `;
+          fiuBox.appendChild(card);
+        });
+      } else {
+        fiuBox.innerHTML = '<span style="font-size: 11px; color: var(--gray);">No flagged suspicious cash structuring records</span>';
+      }
+    }
+
+    // Render Telecom CDR Intercept Analysis
+    const cdrBox = document.getElementById('drawer-cdr-container');
+    if (cdrBox) {
+      cdrBox.innerHTML = '';
+      const primaryPhone = (entity.phones && entity.phones[0]) || '+91-9820091100';
+      const sampleCalls = [];
+      for (let c = 0; c < 12; c++) {
+        sampleCalls.push({
+          caller_msisdn: primaryPhone,
+          receiver_msisdn: '+91-9876543210',
+          duration_sec: 24,
+          cell_tower_id: 'CELL-MUM-4001',
+          timestamp: new Date().toISOString()
+        });
+      }
+      const cdrAnalysis = analyzeCDRLogs(sampleCalls);
+      if (entity.phones && entity.phones.length > 0 && cdrAnalysis.burstAnomalies.length > 0) {
+        cdrAnalysis.burstAnomalies.forEach((burst) => {
+          const card = document.createElement('div');
+          card.className = 'fir-card-item';
+          card.style.borderLeft = '3px solid #F59E0B';
+          card.innerHTML = `
+            <div style="font-size: 11px; font-weight: 700; color: #D97706;">📡 CDR BURST: ${burst.type}</div>
+            <div style="font-size: 11px; margin-top: 2px; color: var(--navy);">${burst.notes}</div>
+          `;
+          cdrBox.appendChild(card);
+        });
+      } else {
+        cdrBox.innerHTML = '<span style="font-size: 11px; color: var(--gray);">No anomalous short-duration call bursts detected</span>';
+      }
     }
 
     // Intelligence Summary
