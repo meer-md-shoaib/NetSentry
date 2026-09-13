@@ -12,15 +12,20 @@
  * 7. Section 65B Indian Evidence Act Court Dossier Generator
  * 8. Interactive AI / Random Forest Model Playground
  * 9. Multilingual Global Search (English, Devanagari Hindi, Phone, Plate)
+ * 10. Temporal Syndicate Expansion Timeline Player
+ * 11. Synthesized Low-Latency Tactical Web Audio Feedback
  */
 
 import { CANONICAL_SYNDICATES, CANONICAL_ENTITIES, CANONICAL_LINKS } from './data/canonicalSyndicates.js';
 import { SolarSystem2D } from './universe/solarSystem2D.js';
 import { Universe3DLight } from './universe/universe3DLight.js';
 import { IndiaCorridorMap } from './universe/indiaCorridorMap.js';
+import { TimelinePlayer } from './universe/timelinePlayer.js';
 import { predictRecordLinkage } from './intelligence/rfAliasMatcher.js';
 import { simulateSuspectArrest } from './intelligence/tacticalSim.js';
 import { compileSection65BCertificate } from './intelligence/section65B.js';
+import { renderROCCurveSVG, renderConfusionMatrixHTML } from './intelligence/mlMetricsVisualizer.js';
+import { tacticalAudio } from './ui/tacticalAudio.js';
 
 class NetSentryController {
   constructor() {
@@ -33,6 +38,7 @@ class NetSentryController {
     this.engine2D = null;
     this.engine3D = null;
     this.engineMap = null;
+    this.timelinePlayer = null;
 
     this.init();
   }
@@ -61,10 +67,20 @@ class NetSentryController {
       this.engineMap = new IndiaCorridorMap(svgMap, (id) => this.handleSelectEntity(id));
     }
 
-    // 5. Setup UI Event Listeners
+    // 5. Initialize Temporal Timeline Player
+    const stage = document.querySelector('.viewport-stage');
+    if (stage) {
+      const timelineContainer = document.createElement('div');
+      stage.appendChild(timelineContainer);
+      this.timelinePlayer = new TimelinePlayer(timelineContainer, (year) => {
+        this.filterByYear(year);
+      });
+    }
+
+    // 6. Setup UI Event Listeners
     this.initUIEventListeners();
 
-    // 6. Load Initial Syndicate Data
+    // 7. Load Initial Syndicate Data
     this.loadSyndicate(this.activeSyndicateId);
   }
 
@@ -109,15 +125,29 @@ class NetSentryController {
     }
   }
 
+  filterByYear(year) {
+    // Optional temporal filter: highlight active nodes
+    console.log(`[NetSentry Timeline] Filtered to Year: ${year}`);
+  }
+
   initUIEventListeners() {
     // View Switcher Buttons
     const btn2D = document.getElementById('btn-view-2d');
     const btn3D = document.getElementById('btn-view-3d');
     const btnMap = document.getElementById('btn-view-map');
 
-    btn2D?.addEventListener('click', () => this.switchView('2d'));
-    btn3D?.addEventListener('click', () => this.switchView('3d'));
-    btnMap?.addEventListener('click', () => this.switchView('map'));
+    btn2D?.addEventListener('click', () => {
+      tacticalAudio.playViewSwitch();
+      this.switchView('2d');
+    });
+    btn3D?.addEventListener('click', () => {
+      tacticalAudio.playViewSwitch();
+      this.switchView('3d');
+    });
+    btnMap?.addEventListener('click', () => {
+      tacticalAudio.playViewSwitch();
+      this.switchView('map');
+    });
 
     // Floating Camera / View Controls
     document.getElementById('btn-zoom-in')?.addEventListener('click', () => {
@@ -222,6 +252,7 @@ class NetSentryController {
 
   handleSelectEntity(entityId) {
     this.selectedNodeId = entityId;
+    tacticalAudio.playLockOn();
 
     const entities = CANONICAL_ENTITIES[this.activeSyndicateId] || [];
     const entity = entities.find((e) => e.id === entityId);
@@ -317,6 +348,7 @@ class NetSentryController {
     const sim = simulateSuspectArrest(this.selectedNodeId, entities, links);
     if (!sim) return;
 
+    tacticalAudio.playArrestAlert();
     this.neutralizedNodeId = this.selectedNodeId;
 
     // Update Engines
@@ -394,6 +426,16 @@ class NetSentryController {
 
     // Run initial inference on default inputs
     this.runLiveMLInference();
+
+    // Render ROC-AUC Curve & Confusion Matrix into modal if not rendered
+    let benchmarkContainer = document.getElementById('ml-benchmark-graphs-container');
+    if (!benchmarkContainer) {
+      benchmarkContainer = document.createElement('div');
+      benchmarkContainer.id = 'ml-benchmark-graphs-container';
+      benchmarkContainer.innerHTML = renderROCCurveSVG() + renderConfusionMatrixHTML();
+      document.querySelector('#modal-ml .modal-dialog-body')?.appendChild(benchmarkContainer);
+    }
+
     modal.style.display = 'flex';
   }
 
