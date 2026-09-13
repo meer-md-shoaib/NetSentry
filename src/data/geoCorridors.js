@@ -84,5 +84,50 @@ export const INTERSTATE_CORRIDORS = [
     syndicateId: "syn_punjab",
     type: "Night Drone Contraband Recoveries",
     risk: "CRITICAL"
+  },
+  {
+    id: "corridor_bambiha_axis",
+    name: "Mohali ⟷ Gurugram ⟷ Samba Gang War Transit",
+    from: "mohali",
+    to: "gurugram",
+    syndicateId: "syn_bambiha",
+    type: "Extortion Pooling & Contract Hit Squads",
+    risk: "CRITICAL"
+  },
+  {
+    id: "corridor_trans_yamuna_arms",
+    name: "Seelampur ⟷ Meerut Clandestine Firearms Corridor",
+    from: "delhi",
+    to: "meerut",
+    syndicateId: "syn_trans_yamuna",
+    type: "Factory Firearm Delivery & Ammunition Drops",
+    risk: "CRITICAL"
+  },
+  {
+    id: "corridor_deeg_phishing",
+    name: "Deeg ⟷ Bharatpur ⟷ Nuh Mule Cashout Axis",
+    from: "deeg",
+    to: "bharatpur",
+    syndicateId: "syn_mewat_deeg",
+    type: "Phishing Cashout & Bulk SIM Injection",
+    risk: "HIGH"
+  },
+  {
+    id: "corridor_coastal_dhow",
+    name: "Mandvi ⟷ Nhava Sheva Arabian Sea Contraband Channel",
+    from: "mandvi",
+    to: "mumbai",
+    syndicateId: "syn_coastal",
+    type: "Offshore Dhow Landing & Container Concealment",
+    risk: "CRITICAL"
+  },
+  {
+    id: "corridor_vehicle_ficn_line",
+    name: "Rohtak ⟷ Meerut ⟷ Malda Trans-India Vehicle Line",
+    from: "rohtak",
+    to: "malda",
+    syndicateId: "syn_vehicle_ficn",
+    type: "Cloned SUV Transit & Fake Currency Exchange",
+    risk: "CRITICAL"
   }
 ];
