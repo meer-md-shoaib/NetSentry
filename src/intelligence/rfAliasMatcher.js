@@ -10,13 +10,16 @@
 
 // Double Metaphone table approximation for Indian regional names
 const PHONETIC_MAP = {
-  "अ": "A", "आ": "A", "इ": "I", "ई": "I", "उ": "U", "ऊ": "U",
+  "अ": "A", "आ": "A", "इ": "I", "ई": "I", "उ": "U", "ऊ": "U", "ए": "E", "ऐ": "AI", "ओ": "O", "औ": "AU",
   "क": "K", "ख": "KH", "ग": "G", "घ": "GH",
   "च": "CH", "छ": "CH", "ज": "J", "झ": "JH",
   "ट": "T", "ठ": "TH", "ड": "D", "ढ": "DH", "ण": "N",
   "त": "T", "थ": "TH", "द": "D", "ध": "DH", "न": "N",
   "प": "P", "फ": "PH", "ब": "B", "भ": "BH", "म": "M",
-  "य": "Y", "र": "R", "ल": "L", "व": "V", "श": "SH", "ष": "SH", "स": "S", "ह": "H"
+  "य": "Y", "र": "R", "ल": "L", "व": "V", "श": "SH", "ष": "SH", "स": "S", "ह": "H",
+  // Vowel signs (Matras) & modifiers
+  "ा": "a", "ि": "i", "ी": "ee", "ु": "u", "ू": "oo", "े": "e", "ै": "ai", "ो": "o", "ौ": "au",
+  "ं": "n", "ँ": "n", "ः": "h", "\u094D": "" // Halant (virama)
 };
 
 /**
@@ -26,9 +29,13 @@ export function transliterateIndicToLatin(text) {
   if (!text) return "";
   let out = "";
   for (let char of text) {
-    out += PHONETIC_MAP[char] || char;
+    if (char in PHONETIC_MAP) {
+      out += PHONETIC_MAP[char];
+    } else {
+      out += char;
+    }
   }
-  return out.toLowerCase().trim();
+  return out.toLowerCase().replace(/\s+/g, ' ').trim();
 }
 
 /**
@@ -106,6 +113,19 @@ export function predictRecordLinkage(entityA, entityB) {
   const nameA = entityA.name || entityA.canonical_name || "";
   const nameB = entityB.name || entityB.canonical_name || "";
 
+  // Transliterate both names to normalized Latin
+  const normA = transliterateIndicToLatin(nameA)
+    .replace(/\b(mohd|md|bhai|don|seth|ustad|anna|chhota)\b/gi, '')
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+  const normB = transliterateIndicToLatin(nameB)
+    .replace(/\b(mohd|md|bhai|don|seth|ustad|anna|chhota)\b/gi, '')
+    .replace(/[^a-z0-9\s]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim();
+
   // 1. Phone corroboration
   const phonesA = new Set(entityA.phones || []);
   const phonesB = entityB.phones || [];
@@ -116,16 +136,16 @@ export function predictRecordLinkage(entityA, entityB) {
   const vehB = entityB.vehicles || [];
   const hasSharedVehicle = vehB.some((v) => vehA.has(v)) ? 1.0 : 0.0;
 
-  // 3. Phonetic overlap
-  const metaA = getDoubleMetaphoneTokens(nameA);
-  const metaB = getDoubleMetaphoneTokens(nameB);
+  // 3. Phonetic overlap on root names
+  const metaA = getDoubleMetaphoneTokens(normA || nameA);
+  const metaB = getDoubleMetaphoneTokens(normB || nameB);
   const phoneticOverlap = normalizedLevenshtein(metaA, metaB);
 
-  // 4. Token set ratio
-  const tokenSet = tokenSetSimilarity(nameA, nameB);
+  // 4. Token set ratio on Latin transliterated tokens
+  const tokenSet = Math.max(tokenSetSimilarity(normA, normB), phoneticOverlap > 0.8 ? 0.9 : 0.0);
 
-  // 5. Direct Levenshtein
-  const levenshtein = normalizedLevenshtein(nameA, nameB);
+  // 5. Direct Levenshtein on normalized Latin strings
+  const levenshtein = normalizedLevenshtein(normA, normB);
 
   // Feature weights from Random Forest model_metrics.json
   const WEIGHTS = {
