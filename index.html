@@ -59,6 +59,10 @@
 
       <!-- Topbar Action Utilities -->
       <div class="topbar-actions">
+        <button id="btn-open-ingest" class="btn-command btn-command-secondary" title="Ingest Custom CSV or Police FIR Narrative">
+          <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
+          Ingest Data
+        </button>
         <button id="btn-open-ml" class="btn-command btn-command-secondary" title="View AI / Random Forest Model Metrics & Live Playground">
           <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M18 20V10M12 20V4M6 20v-6"/></svg>
           ML Metrics
@@ -343,6 +347,81 @@
         </div>
         <div class="modal-dialog-footer">
           <button class="btn-command btn-command-secondary" data-close="modal-ml">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- MODAL 3: Data Ingestion & Live Entity Extractor -->
+    <div id="modal-ingest" class="modal-overlay" style="display: none;">
+      <div class="modal-dialog" style="max-width: 820px;">
+        <div class="modal-dialog-header">
+          <div class="modal-title-wrap">
+            <h3>Law Enforcement Data Ingest &amp; FIR Narrative Extractor</h3>
+            <p>Upload External CSV Chargesheets or Parse Raw FIR Narratives (SIH 2026 / NCRB PS 26189)</p>
+          </div>
+          <button class="btn-close-modal" data-close="modal-ingest">&times;</button>
+        </div>
+        <div class="modal-dialog-body">
+          <div class="ingest-tabs" style="display: flex; gap: 8px; margin-bottom: 16px; border-bottom: 2px solid var(--border); padding-bottom: 8px;">
+            <button id="tab-btn-csv" class="btn-command btn-command-primary" style="font-size: 12px;">📁 CSV Chargesheet Upload</button>
+            <button id="tab-btn-fir" class="btn-command btn-command-secondary" style="font-size: 12px;">📝 FIR Narrative NLP Parser</button>
+          </div>
+
+          <!-- TAB CONTENT 1: CSV Ingest -->
+          <div id="tab-content-csv">
+            <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--navy-muted); align-self: center;">Quick Load Sample:</span>
+              <button id="btn-load-sample-mewat" class="btn-command btn-command-secondary" style="padding: 4px 10px; font-size: 11px;">Mewat Cyber Ring</button>
+              <button id="btn-load-sample-drone" class="btn-command btn-command-secondary" style="padding: 4px 10px; font-size: 11px;">Punjab Drone Cartel</button>
+              <button id="btn-load-sample-kutch" class="btn-command btn-command-secondary" style="padding: 4px 10px; font-size: 11px;">Kutch Maritime Dhow</button>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+              <label style="font-size: 11px; font-weight: 700; color: var(--navy-muted); display: block; margin-bottom: 4px;">Syndicate Designation</label>
+              <input type="text" id="ingest-syndicate-name" value="Custom Field Intelligence Ingest" style="width: 100%; padding: 8px 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); font-size: 12px;" />
+            </div>
+
+            <div style="margin-bottom: 12px;">
+              <label style="font-size: 11px; font-weight: 700; color: var(--navy-muted); display: block; margin-bottom: 4px;">CSV Data (Paste or edit below)</label>
+              <textarea id="csv-input-text" rows="8" style="width: 100%; padding: 10px; font-family: var(--font-mono); font-size: 11px; border: 1px solid var(--border); border-radius: var(--radius-sm); resize: vertical;" placeholder="id,name,alias,threat,role,jurisdiction,fir,notes&#10;REC-01,Vikram Pandit,Panditji,CRITICAL,Kingpin,Delhi,FIR 88/24,Hawala and arms conduit"></textarea>
+            </div>
+
+            <div style="display: flex; gap: 10px; justify-content: flex-end;">
+              <button id="btn-submit-csv" class="btn-command btn-command-primary" style="padding: 8px 16px;">
+                ⚡ Parse &amp; Ingest Into Active Graph
+              </button>
+            </div>
+          </div>
+
+          <!-- TAB CONTENT 2: FIR Narrative NLP -->
+          <div id="tab-content-fir" style="display: none;">
+            <div style="display: flex; gap: 8px; margin-bottom: 10px; flex-wrap: wrap;">
+              <span style="font-size: 11px; font-weight: 700; color: var(--navy-muted); align-self: center;">Quick Load FIR:</span>
+              <button id="btn-load-sample-fir1" class="btn-command btn-command-secondary" style="padding: 4px 10px; font-size: 11px;">FIR 402/24 (Punjab Drone)</button>
+              <button id="btn-load-sample-fir2" class="btn-command btn-command-secondary" style="padding: 4px 10px; font-size: 11px;">FIR 118/25 (Mewat Phishing)</button>
+            </div>
+
+            <div style="margin-bottom: 12px;">
+              <label style="font-size: 11px; font-weight: 700; color: var(--navy-muted); display: block; margin-bottom: 4px;">Raw FIR Text (Hindi / English Law Enforcement Narrative)</label>
+              <textarea id="fir-input-text" rows="7" style="width: 100%; padding: 10px; font-size: 12px; border: 1px solid var(--border); border-radius: var(--radius-sm); resize: vertical;" placeholder="Enter complete FIR text including suspects, alias urff, seized vehicles, weapons, and phone numbers..."></textarea>
+            </div>
+
+            <button id="btn-parse-fir" class="btn-command btn-command-primary" style="width: 100%; justify-content: center; padding: 10px; margin-bottom: 14px;">
+              ⚡ Run Sovereign NLP Entity &amp; Modus Operandi Extractor
+            </button>
+
+            <!-- NLP Results Display -->
+            <div id="fir-nlp-results-box" style="display: none; background: var(--surface-alt); border: 1px solid var(--border); border-radius: var(--radius-md); padding: 14px;">
+              <div class="detail-group-title" style="margin-bottom: 8px;">Extracted Intelligence Graph Nodes &amp; Linkages</div>
+              <div id="fir-nlp-entities-list" style="font-size: 12px; line-height: 1.6;"></div>
+              <button id="btn-add-fir-to-graph" class="btn-command btn-command-primary" style="margin-top: 10px; width: 100%; justify-content: center;">
+                ✓ Add Extracted Entities to Network Graph
+              </button>
+            </div>
+          </div>
+        </div>
+        <div class="modal-dialog-footer">
+          <button class="btn-command btn-command-secondary" data-close="modal-ingest">Close</button>
         </div>
       </div>
     </div>
