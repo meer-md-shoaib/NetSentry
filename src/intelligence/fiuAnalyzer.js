@@ -72,6 +72,7 @@ export function analyzeFIUTransactions(transactions = []) {
   return {
     totalAccountsMonitored: accountStats.size,
     totalSuspiciousFlags: suspiciousReports.length,
-    reports: suspiciousReports
+    reports: suspiciousReports,
+    suspiciousReports: suspiciousReports
   };
 }
