@@ -113,3 +113,4 @@ python -m http.server 8090
 - [🏛️ SIH 2026 Jury Presentation & Defense Manual](SIH_DEFENSE_GUIDE.md)
 - [📋 100/100 Evaluation Rubric Compliance Matrix](SIH_EVALUATION_RUBRIC.md)
 
+## Made by :- Meer Mohammed Shoaib
